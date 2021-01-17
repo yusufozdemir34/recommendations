@@ -201,7 +201,7 @@ def get_prediction(utility, pcs_matrix, user, cluster_users):
     cluster_users.pop(0)
     maxim_cluster = max(cluster_users)
     n_users = len(user)
-    n_cluster = len(maxim_cluster)  # 19
+    n_cluster = 10  # len(maxim_cluster)
     utility_copy = np.copy(utility)
     for i in range(0, n_users):
         for j in range(0, n_cluster):
