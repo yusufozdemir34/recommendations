@@ -3,7 +3,7 @@ from recommendsystem.RecommendationHelper import createCluster, cluster_means, c
     create_model, set_one_for_max_avg_value_others_zero, get_prediction, mean_square_error, \
     cluster_mean_from_components, load_model_as_np
 from antcolonyalgorithm.ant_colony_helper import AntColonyHelper
-from ccl.ccl import connected_component_labelling
+
 import numpy as np
 
 
@@ -15,17 +15,17 @@ class ColdStartRecommendation:
 
         # Apply ant colony optimization to the similarity matrix
         result = np.load("../data/aop_clustering_result.npy")
-        # result = AntColonyHelper.ant_colony_optimization(n_users, pcs_matrix)
-        # np.save("../data/aop_clustering_result", result)
+        # result = AntColonyHelper.ant_colony_optimization(943, pcs_matrix)
+        # np.save("../data/aop_clustering_result.npy", result)
         result = np.array(result)
         # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.
         result = set_one_for_max_avg_value_others_zero(result)
 
         # tagging (labeling) for cluster
         # result = connected_component_labelling(result, 4)
-        clusterUser = find_cluster_in_matrix(result, n_users)
-        for nodes in clusterUser:
-            print(nodes)
+        clusterUser, nxg, components = find_cluster_in_matrix(result, n_users)
+        # for nodes in clusterUser:
+        #     print(nodes)
         means = cluster_mean_from_components(utility, clusterUser)
         # clusterUser = createCluster(result)
         # KNNalgorithm.getKNNalgorithm(clusterUser,1,1,1)
