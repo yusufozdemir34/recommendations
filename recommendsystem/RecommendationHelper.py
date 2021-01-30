@@ -197,9 +197,18 @@ def cluster_means(utility, clusters):
     return cluster_avg
 
 
+def cluster_mean_from_components(utility, components):
+    cluster_avg = []
+    # calculate average of each line (user)
+    for nodes in components:
+        temp = []
+        for node in nodes:
+            temp.append(utility[node])
+        cluster_avg.append(np.mean(temp))
+    return cluster_avg
+
+
 def get_prediction(utility, pcs_matrix, user, cluster_users):
-    cluster_users.pop(0)
-    maxim_cluster = max(cluster_users)
     n_users = len(user)
     n_cluster = 10  # len(maxim_cluster)
     utility_copy = np.copy(utility)
@@ -345,5 +354,28 @@ def create_model():
                 A = utility[i]
                 B = utility[j]
                 pcs_matrix[i][j], _ = pearsonr(A, B)
+    # store all records to nm array by being binary
+    save_model_as_np(user, item, test, pcs_matrix, utility, n_users, n_items)
+    return user, item, test, pcs_matrix, utility, n_users, n_items
+
+
+def save_model_as_np(user, item, test, pcs_matrix, utility, n_users, n_items):
+    np.save("../data/np_user", user)
+    np.save("../data/np_item", item)
+    np.save("../data/np_test", test)
+    np.save("../data/np_pcs_matrix", pcs_matrix)
+    np.save("../data/np_utility", utility)
+    np.save("../data/np_n_users", n_users)
+    np.save("../data/np_n_items", n_items)
+
+
+def load_model_as_np():
+    user = np.load("../data/np_user.npy", allow_pickle=True)
+    item = np.load("../data/np_item.npy", allow_pickle=True)
+    test = np.load("../data/np_test.npy", allow_pickle=True)
+    pcs_matrix = np.load("../data/np_pcs_matrix.npy", allow_pickle=True)
+    utility = np.load("../data/np_utility.npy", allow_pickle=True)
+    n_users = np.load("../data/np_n_users.npy", allow_pickle=True)
+    n_items = np.load("../data/np_n_items.npy", allow_pickle=True)
 
     return user, item, test, pcs_matrix, utility, n_users, n_items

@@ -4,27 +4,51 @@ import numpy as np
 from collections import defaultdict
 
 
-def find_cluster_in_matrix(connected_point, n_user):
-    connected_edge1, connected_edge2 = np.where(connected_point == 1)
+class FindClusterInMatrix:
+    def __init__(self, id, age, sex, occupation, zip):
+        self.id = int(id)
+        self.age = int(age)
+        self.sex = sex
+        self.occupation = occupation
+        self.zip = zip
+        self.avg_r = 0.0
 
-    # connected_edges = np.concatenate((connected_edge1, connected_edge2), axis=1)
+
+def find_cluster_in_matrix(connected_point, n_cluster):
+    connected = np.where(connected_point == 1)
     G = nx.Graph()
-    user_nodes = np.arange(1, n_user)
+    user_nodes = np.arange(0, n_cluster)
     G.add_nodes_from(user_nodes)
-    print(connected_edge1)
-    print(connected_edge2)
-    connected = [(int(connected_edge1), int(connected_edge2))]
+    connected = np.column_stack(connected)
+    connected = tuple(map(tuple, connected))
     G.add_edges_from(connected)
-   # print("G is : ", G.nodes)
     components = nx.connected_components(G)
-    # print("components is : ", components)
-    # for nodes in components:
-    #     print(nodes)
-    #     # for node in nodes:
-    #     #     print(node)
-    #
-    # print("merhaba")
+    for nodes in components:
+        print(nodes)
+        for node in nodes:
+            print(node)
+    result = np.zeros((n_cluster, n_cluster))
+    i = 0
+    j = 0
+    for nodes in components:
+        temp = []
+        for node in nodes:
+            temp.append(node)
+            j = j + 1
+        result[i] = temp
+        i = i + 1
+    return result
 
 
-connected_edges = np.asmatrix('2  2  0 ; 1  0  0; 0  0  0')
-find_cluster_in_matrix(connected_edges, 3)
+def get_result_from_component(components, n_cluster):
+    result = np.zeros((n_cluster, n_cluster))
+    i = 0
+    j = 0
+    for nodes in components:
+        temp = []
+        for node in nodes:
+            temp.append(node)
+            j = j + 1
+        result[i] = temp
+        i = i + 1
+    return result
