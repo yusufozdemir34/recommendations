@@ -23,21 +23,26 @@ def find_cluster_in_matrix(connected_point, n_cluster):
     connected = tuple(map(tuple, connected))
     G.add_edges_from(connected)
     components = nx.connected_components(G)
+    result = []
+    for nodes in components:
+        temp = []
+        for node in nodes:
+            temp.append(node)
+        result.append(temp)
 
-    result = get_result_from_component(components, n_cluster)
+    # result = get_result_from_component(components, n_cluster)
 
     return result, G, components
 
 
 def get_result_from_component(components, n_cluster):
-    result = np.zeros((n_cluster, n_cluster))
+    result = []
     i = 0
     j = 0
     for nodes in components:
-        temp = np.zeros(n_cluster)
+        temp = []
         for node in nodes:
-            temp[j] = node
-            j = j + 1
-        result[i] = temp
+            temp.append(node)
+        result.append(temp)
         i = i + 1
     return result
