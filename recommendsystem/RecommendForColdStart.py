@@ -38,7 +38,7 @@ class ColdStartRecommendation:
         utility_copy = get_prediction(utility, pcs_matrix, user, clusterUser)
 
         # test datası ile tehmin arasında MSE
-        mean_square_error(test, utility_copy, n_users, n_items)
+        mean_square_error(utility, utility_copy, n_users, n_items)
 
 
 if __name__ == '__main__':

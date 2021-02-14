@@ -1,4 +1,5 @@
 import re
+from sklearn import preprocessing
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 from sklearn.metrics import mean_squared_error
@@ -109,13 +110,14 @@ def pearson(x, y, utility_clustered, user):
 # user_id - oyu tahmin edilecek user
 # i_id - kullanıcının tahmin edilecek oyu verdiği item clusterı
 # top_n - bu benzerlik hesabı için kullanılacak benzer user sayısı.
-def predict(user_id, i_id, top_n, n_users, pcs_matrix, user, clustered_user, clusternumber):
+def predict(user_id, i_id, top_n, n_users, pcs_matrix, user, clustered_user, clusternumber, temp):
     similarity = []
     for i in range(0, n_users):
         if i + 1 != user_id:
             similarity.append(pcs_matrix[user_id - 1][i])
-    temp = norm(n_users, clustered_user, user, clusternumber)
-    temp = np.delete(temp, user_id - 1, 0)
+    # temp = norm(n_users, clustered_user, user, clusternumber)
+    # temp = preprocessing.normalize(clustered_user)
+    # temp = np.delete(temp, user_id - 1, 0)
     top = [x for (y, x) in sorted(zip(similarity, temp), key=lambda pair: pair[0], reverse=True)]
     # top: benzerlik ve oylama matrislerinin zip ile eşleşmesi sonucu sorted ile sıralanması ile
     # en yüksek benzerlik oranına sahip bireylerin oylarını saklar.
@@ -137,9 +139,39 @@ def predict(user_id, i_id, top_n, n_users, pcs_matrix, user, clustered_user, clu
         return rate
 
 
+# user_id - oyu tahmin edilecek user
+# i_id - kullanıcının tahmin edilecek oyu verdiği item
+def predict1(user_id, i_id, top_n, n_users, pcs_matrix, user, clustered_user, clusternumber, temp):
+    similarity = []
+    is_break = False
+    rate = user[user_id].avg_r
+    count = 1
+    for cluster in clustered_user:
+        if is_break:
+            if rate != 0 and count != 0:
+                rate = rate / count  # aynı kumedeki kullanicilarin vermis oldugu oyların ortalamasini bul
+            break  # outer loop break
+        rate = 0
+        for j in cluster:  # clusterlar uzerinde gez.
+            try:
+                if j == user_id:  # verilen kullanicinin hangi clusterda oldugunu bul
+                    similarity.append(cluster)
+                    is_break = True
+                    # break
+                elif temp[j][i_id] != 0:  # oy kullanmis kullanicilarin oyunu ver
+                    rate = rate + temp[j][i_id]
+                    count = count + 1
+
+            except:
+                print("An exception occurred", j)
+
+    # print(similarity)
+    return rate
+
+
 def norm(n_users, clustered_user, user, n_cluster):
-    normalize = np.zeros((n_users, n_users))
-    for i in range(0, n_users):
+    normalize = np.zeros((n_users, n_cluster))
+    for i in range(0, n_cluster):
         j = 0
         try:
             for cluster in clustered_user[i]:
@@ -163,7 +195,7 @@ def set_one_for_max_avg_value_others_zero(delta_mat):
     # delta_math ın içindeki en yüksek avg yi bul. sonra en yüksek avg ye bir de. diğerleri sıfırdır.
     for j in range(0, for_i_size):
         for i in range(0, for_y_size):
-            if delta_mat[i][j] == max_matrix[j] and max_matrix[j] > avg_matrix*0.92:
+            if delta_mat[i][j] == max_matrix[j] and max_matrix[j] > avg_matrix * 0.92:
                 delta_mat[i][j] = 1
             else:
                 delta_mat[i][j] = 0
@@ -217,12 +249,14 @@ def cluster_mean_from_components(utility, components):
 
 def get_prediction(utility, pcs_matrix, user, cluster_users):
     n_users = len(user)
-    n_cluster = 10  # len(maxim_cluster)
+    n_cluster = len(cluster_users)
     utility_copy = np.copy(utility)
+    temp_normalized = norm(n_users, cluster_users, user, n_cluster)
     for i in range(0, n_users):
         for j in range(0, n_cluster):
-            if utility_copy[i][j] == 0:
-                utility_copy[i][j] = predict(i + 1, j + 1, 2, n_users, pcs_matrix, user, cluster_users, n_cluster)
+            if utility_copy[i][j] == 0:  # oy verilmemis item lara oy tahmini yap
+                utility_copy[i][j] = predict1(i, j, 2, n_users, pcs_matrix, user, cluster_users, n_cluster,
+                                              utility)
     print("\rPrediction [User:Rating] = [%d:%d]" % (i, j))
 
     return utility_copy
