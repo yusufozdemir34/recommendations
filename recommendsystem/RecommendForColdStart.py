@@ -1,9 +1,9 @@
 from clustering.FindClusterInMatrix import find_cluster_in_matrix
-from recommendsystem.RecommendationHelper import createCluster, cluster_means, create_avg_user, \
+from recommendsystem.RecommendationHelper import create_avg_user, \
     set_one_for_max_avg_value_others_zero, get_prediction, mean_square_error, \
     cluster_mean_from_components
-from antcolonyalgorithm.ant_colony_helper import AntColonyHelper
-from recommendsystem.FileHelper import create_model, load_model_as_np
+from antcolonyalgorithm.ApplyAntColonyAlgorithm import AntColonyHelper
+from recommendsystem.FileHelper import load_model_as_np
 import numpy as np
 
 
@@ -11,11 +11,12 @@ class ColdStartRecommendation:
     def run_recommendation(self):
         # data arrays
         # find pcs_matrix relative to pearson algorithm (similarity matrix)
-        user, item, test, pcs_matrix, utility, n_users, n_items = create_model()
+        user, item, test, pcs_matrix, utility, n_users, n_items = load_model_as_np()
 
         # Apply ant colony optimization to the similarity matrix
         # ant_colony_user_cluster = np.load("../data/aop_clustering_result.npy")
-        ant_colony_user_cluster = AntColonyHelper.ant_colony_optimization(943, pcs_matrix)
+        # ant_colony_user_cluster = AntColonyHelper.ant_colony_optimization(943, pcs_matrix)
+        ant_colony_user_cluster = AntColonyHelper.ant_colony_by_acopy(943, pcs_matrix)
         # np.save("../data/aop_clustering_result.npy", antColony)
         result = np.array(ant_colony_user_cluster)
         # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.

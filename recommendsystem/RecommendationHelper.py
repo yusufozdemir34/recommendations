@@ -139,20 +139,20 @@ def norm(n_users, clustered_user, user, n_cluster):
     return normalize
 
 
-def set_one_for_max_avg_value_others_zero(delta_mat):
-    max_matrix = delta_mat.max(0)
+def set_one_for_max_avg_value_others_zero(data):
+    max_matrix = data.max(0)
     avg_matrix = np.mean(max_matrix)
-    for_i_size = np.size(delta_mat, 1)
-    for_y_size = np.size(delta_mat, 0)
+    for_i_size = np.size(data, 1)
+    for_y_size = np.size(data, 0)
 
     # delta_math ın içindeki en yüksek avg yi bul. sonra en yüksek avg ye bir de. diğerleri sıfırdır.
     for j in range(0, for_i_size):
         for i in range(0, for_y_size):
-            if delta_mat[i][j] == max_matrix[j] and max_matrix[j] > avg_matrix * 0.92:
-                delta_mat[i][j] = 1
+            if data[i][j] == max_matrix[j] and max_matrix[j] > avg_matrix * 0.92:
+                data[i][j] = 1
             else:
-                delta_mat[i][j] = 0
-    return delta_mat
+                data[i][j] = 0
+    return data
 
 
 def isaverage(delta_mat):

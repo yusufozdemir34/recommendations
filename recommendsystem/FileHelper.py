@@ -130,7 +130,7 @@ def create_model():
                 B = utility[j]
                 pcs_matrix[i][j], _ = pearsonr(A, B)
     # store all records to nm array by being binary
-    # save_model_as_np(user, item, test, pcs_matrix, utility, n_users, n_items)
+    save_model_as_np(user, item, test, pcs_matrix, utility, n_users, n_items)
     return user, item, test, pcs_matrix, utility, n_users, n_items
 
 
