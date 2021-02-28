@@ -75,7 +75,7 @@ def predict1(user_id, i_id, top_n, n_users, pcs_matrix, user, clustered_user, cl
         for j in cluster:  # clusterlar uzerinde gez.
             try:
                 if j == user_id:  # verilen kullanicinin hangi clusterda oldugunu bul
-                    similarity.append(cluster)
+                    # similarity.append(cluster)
                     is_break = True
                     # break
                 elif temp[j][i_id] != 0:  # oy kullanmis kullanicilarin oyunu ver
@@ -207,7 +207,7 @@ def get_prediction(utility, pcs_matrix, user, cluster_users):
     temp_normalized = norm(n_users, cluster_users, user, n_cluster)
     for i in range(0, n_users):
         for j in range(0, n_cluster):
-            if utility_copy[i][j] == 0:  # oy verilmemis item lara oy tahmini yap
+            if utility_copy[i][j] == -1:  # oy verilmemis item lara oy tahmini yap
                 utility_copy[i][j] = predict1(i, j, 2, n_users, pcs_matrix, user, cluster_users, n_cluster,
                                               utility)
     print("\rPrediction [User:Rating] = [%d:%d]" % (i, j))

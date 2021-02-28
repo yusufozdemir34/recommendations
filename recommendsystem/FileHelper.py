@@ -118,6 +118,12 @@ def create_model():
     test = np.zeros((n_users, n_items))
     for r in rating_test:
         test[r.user_id - 1][r.item_id - 1] = r.rating
+    # verinin bir kismini sildim. sildigim datalari -1 olarak isaretliyoruz.
+    # daha sonra bunlari tahmin edeceğimizde hangilerini tahmin ettiğimizi bilmek icin -1 yapiyoruz.
+    for i in range(0, n_users):
+        for j in range(0, n_items):
+            if utility[i][j] != test[i][j]:
+                utility[i][j] == -1
 
     # clusteri kaldirdiğimizda ortalamayı nasıl bulup ekleyeceğiz.
     # prediction daki [cluster.labels_[j] yerine ne ekleycegiz
@@ -130,27 +136,23 @@ def create_model():
                 B = utility[j]
                 pcs_matrix[i][j], _ = pearsonr(A, B)
     # store all records to nm array by being binary
-    save_model_as_np(user, item, test, pcs_matrix, utility, n_users, n_items)
-    return user, item, test, pcs_matrix, utility, n_users, n_items
+    save_model_as_np(utility, test, user, item, pcs_matrix)
+    return utility, test, user, item, pcs_matrix
 
 
-def save_model_as_np(user, item, test, pcs_matrix, utility, n_users, n_items):
-    np.save("../data/np_user", user)
-    np.save("../data/np_item", item)
-    np.save("../data/np_test", test)
-    np.save("../data/np_pcs_matrix", pcs_matrix)
-    np.save("../data/np_utility", utility)
-    np.save("../data/np_n_users", n_users)
-    np.save("../data/np_n_items", n_items)
+def save_model_as_np(utility, test, user, item, pcs_matrix):
+    np.save("../data/runned_data/np_user", user)
+    np.save("../data/runned_data/np_item", item)
+    np.save("../data/runned_data/np_test", test)
+    np.save("../data/runned_data/np_pcs_matrix", pcs_matrix)
+    np.save("../data/runned_data/np_utility", utility)
 
 
 def load_model_as_np():
-    user = np.load("../data/np_user.npy", allow_pickle=True)
-    item = np.load("../data/np_item.npy", allow_pickle=True)
-    test = np.load("../data/np_test.npy", allow_pickle=True)
-    pcs_matrix = np.load("../data/np_pcs_matrix.npy", allow_pickle=True)
-    utility = np.load("../data/np_utility.npy", allow_pickle=True)
-    n_users = np.load("../data/np_n_users.npy", allow_pickle=True)
-    n_items = np.load("../data/np_n_items.npy", allow_pickle=True)
+    user = np.load("../data/runned_data/np_user.npy", allow_pickle=True)
+    item = np.load("../data/runned_data/np_item.npy", allow_pickle=True)
+    test = np.load("../data/runned_data/np_test.npy", allow_pickle=True)
+    pcs_matrix = np.load("../data/runned_data/np_pcs_matrix.npy", allow_pickle=True)
+    utility = np.load("../data/runned_data/np_utility.npy", allow_pickle=True)
 
-    return user, item, test, pcs_matrix, utility, n_users, n_items
+    return utility, test, user, item, pcs_matrix
