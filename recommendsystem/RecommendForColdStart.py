@@ -1,7 +1,7 @@
 from clustering.FindClusterInMatrix import find_cluster_in_matrix
 from recommendsystem.RecommendationHelper import create_avg_user, \
     set_one_for_max_avg_value_others_zero, get_prediction, mean_square_error, \
-    cluster_mean_from_components
+    cluster_mean_from_components, create_avg_ratings
 from antcolonyalgorithm.ApplyAntColonyAlgorithm import AntColonyHelper
 from recommendsystem.FileHelper import load_model_as_np, create_model
 import numpy as np
@@ -19,7 +19,7 @@ class ColdStartRecommendation:
             for j in range(0, n_items):
                 if utility[i][j] != test[i][j]:
                     utility[i][j] = -1
-                    print("i: ", i, " j: ", j)
+                    print("-1 yapilcaklar i: ", i, " j: ", j)
         # Apply ant colony optimization to the similarity matrix
         # ant_colony_user_cluster = AntColonyHelper.ant_colony_by_acopy(n_users, pcs_matrix)
         # np.save("../data/ant_colony_by_acopy.npy", ant_colony_user_cluster)
@@ -35,10 +35,14 @@ class ColdStartRecommendation:
         # Calculate average value for user ratings and add to user object
         user = create_avg_user(user, n_users, utility)
 
-        utility_copy = get_prediction(utility, pcs_matrix, user, clustered_users)
+        avg = create_avg_ratings(user, n_users, utility, n_items)
+
+        predicted_ratings, rating_by_age, rating_by_sex = get_prediction(utility, pcs_matrix, user, clustered_users, avg)
 
         # test datası ile tehmin arasında MSE
-        mean_square_error(test, utility_copy, n_users, n_items)
+        mean_square_error(test, predicted_ratings, n_users, n_items)
+        mean_square_error(test, rating_by_age, n_users, n_items)
+        mean_square_error(test, rating_by_sex, n_users, n_items)
 
 
 if __name__ == '__main__':

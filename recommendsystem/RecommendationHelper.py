@@ -4,6 +4,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 from sklearn.metrics import mean_squared_error
 from scipy.stats import pearsonr
+from recommendsystem.FileHelper import Average
 
 
 # Pearson Korelasyonu. Userlar arasında dolayısı ile user based.
@@ -54,6 +55,28 @@ def predict(user_id, i_id, top_n, n_users, pcs_matrix, user, clustered_user, clu
         return 5.0
     else:
         return rate
+
+
+def predict_by_age(user_id, avg, user):
+    rate = 0
+    if user[user_id].age < 30:
+        rate = avg.avg_twenty
+    elif user[user_id].age < 40:
+        rate = avg.avg_thirty
+    elif user[user_id].age < 50:
+        rate = avg.avg_forty
+    else:
+        rate = avg.avg_fifty
+    return rate
+
+
+def predict_by_sex(user_id, avg, user):
+    rate = 0
+    if user[user_id].sex == 'M':
+        rate = avg.avg_male
+    else:
+        rate = avg.avg_female
+    return rate
 
 
 # user_id - oyu tahmin edilecek user
@@ -200,19 +223,23 @@ def cluster_mean_from_components(utility, components):
     # return cluster_avg
 
 
-def get_prediction(utility, pcs_matrix, user, cluster_users):
+def get_prediction(utility, pcs_matrix, user, cluster_users, avg):
     n_users = len(user)
     n_cluster = len(cluster_users)
     utility_copy = np.copy(utility)
+    rating_by_age = np.copy(utility)
+    rating_by_sex = np.copy(utility)
     temp_normalized = norm(n_users, cluster_users, user, n_cluster)
     for i in range(0, n_users):
         for j in range(0, n_cluster):
             if utility_copy[i][j] == -1:  # oy verilmemis item lara oy tahmini yap
-                utility_copy[i][j] = predict1(i, j, 2, n_users, pcs_matrix, user, cluster_users, n_cluster,
-                                              utility)
+                utility_copy[i][j] = predict1(i, j, 2, n_users, pcs_matrix, user, cluster_users, n_cluster, utility)
+                rating_by_age[i][j] = predict_by_age(i, avg, user)
+                rating_by_sex[i][j] = predict_by_sex(i, avg, user)
+
     print("\rPrediction [User:Rating] = [%d:%d]" % (i, j))
 
-    return utility_copy
+    return utility_copy, rating_by_age, rating_by_sex
 
 
 def mean_square_error(test, utility, n_users, n_items):
@@ -240,6 +267,59 @@ def createCluster(result):
             except:
                 print("An exception occurred", i, j, result[i][j])
     return clusterUser
+
+
+def create_avg_ratings(user, n_users, ratings, n_items):
+    # her kullanıcının verdiği oyların ortalamaları User objesinde tutuluyor.
+    avg = Average(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    # for j in range(0, n_users):
+    #     if user[j].sex == 'M':  # if kontrolunu bir kere yapmak gerekir. su an her seferinde yapiliyor
+    #         avg.count_male = avg.count_male + 1
+    #     else:
+    #         avg.count_female = avg.count_female + 1
+    #     if user[j].age < 30:  # if kontrolunu bir kere yapmak gerekir. su an her seferinde yapiliyor
+    #         avg.count_twenty = avg.count_twenty + 1
+    #     elif user[j].age < 40:
+    #         avg.count_thirty = avg.count_thirty + 1
+    #     elif user[j].age < 50:
+    #         avg.count_forty = avg.count_forty + 1
+    #     else:
+    #         avg.count_fifty = avg.count_fifty + 1
+    #     for i in range(0, 1682):  # oge bazli uzerinden geciyoruz
+    #         if user[j].sex == 'M':
+    #             avg.avg_male = avg.avg_male + ratings[j][i]
+
+    for i in range(0, 1682):  # oge bazli uzerinden geciyoruz
+        for j in range(0, n_users):
+            if user[j].sex == 'M' and ratings[j][i] != 0:
+                avg.avg_male = avg.avg_male + ratings[j][i]
+                avg.count_male = avg.count_male + 1
+            elif user[j].sex == 'F' and ratings[j][i] != 0:
+                avg.avg_female = avg.avg_female + ratings[j][i]
+                avg.count_female = avg.count_female + 1
+
+            if user[j].age < 30 and ratings[j][i] != 0:
+                avg.avg_twenty = avg.avg_twenty + ratings[j][i]
+                avg.count_twenty = avg.count_twenty + 1
+            elif user[j].age < 40 and ratings[j][i] != 0:
+                avg.avg_thirty = avg.avg_thirty + ratings[j][i]
+                avg.count_thirty = avg.count_thirty + 1
+            elif user[j].age < 50 and ratings[j][i] != 0:
+                avg.avg_forty = avg.avg_forty + ratings[j][i]
+                avg.count_forty = avg.count_forty + 1
+            elif ratings[j][i] != 0:
+                avg.avg_fifty = avg.avg_fifty + ratings[j][i]
+                avg.count_fifty = avg.count_fifty + 1
+
+    avg.avg_twenty = avg.avg_twenty / avg.count_twenty
+    avg.avg_thirty = avg.avg_thirty / avg.count_thirty
+    avg.avg_forty = avg.avg_forty / avg.count_forty
+    avg.avg_fifty = avg.avg_fifty / avg.count_fifty
+
+    avg.avg_male = avg.avg_male / avg.count_male
+    avg.avg_female = avg.avg_female / avg.count_female
+
+    return avg
 
 
 def create_avg_user(user, n_users, utility_clustered):
