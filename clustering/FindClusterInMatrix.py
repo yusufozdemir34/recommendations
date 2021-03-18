@@ -14,7 +14,7 @@ class FindClusterInMatrix:
         self.avg_r = 0.0
 
 
-def find_cluster_in_matrix(connected_point, n_cluster):
+def find_cluster_in_matrix_by_nx(connected_point, n_cluster):
     connected = np.where(connected_point == 1)
     G = nx.Graph()
     user_nodes = np.arange(0, n_cluster)
