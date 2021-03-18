@@ -37,4 +37,3 @@ class Dataset:
             if len(e) == 4:
                 r.append(Rating(e[0], e[1], e[2], e[3]))
         f.close()
-
