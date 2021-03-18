@@ -4,7 +4,9 @@ from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 from sklearn.metrics import mean_squared_error
 from scipy.stats import pearsonr
-from recommendsystem.FileHelper import Average
+
+from domain.Average import Average
+from domain.Prediction import Prediction
 
 
 # Pearson Korelasyonu. Userlar arasında dolayısı ile user based.
@@ -223,23 +225,23 @@ def cluster_mean_from_components(utility, components):
     # return cluster_avg
 
 
-def get_prediction(utility, pcs_matrix, user, cluster_users, avg):
+def get_predictions(utility, pcs_matrix, user, cluster_users, avg):
+    predictions = Prediction(0, 0, 0, 0)
     n_users = len(user)
     n_cluster = len(cluster_users)
-    utility_copy = np.copy(utility)
-    rating_by_age = np.copy(utility)
-    rating_by_sex = np.copy(utility)
-    temp_normalized = norm(n_users, cluster_users, user, n_cluster)
+    predictions.predicted_ratings_by_aco = np.copy(utility)
+    predictions.predicted_rating_by_age = np.copy(utility)
+    predictions.predicted_rating_by_sex = np.copy(utility)
     for i in range(0, n_users):
         for j in range(0, n_cluster):
-            if utility_copy[i][j] == -1:  # oy verilmemis item lara oy tahmini yap
-                utility_copy[i][j] = predict1(i, j, 2, n_users, pcs_matrix, user, cluster_users, n_cluster, utility)
-                rating_by_age[i][j] = predict_by_age(i, avg, user)
-                rating_by_sex[i][j] = predict_by_sex(i, avg, user)
+            if utility[i][j] == -1:  # oy verilmemis item lara oy tahmini yap
+                predictions.predicted_ratings_by_aco[i][j] = predict1(i, j, 2, n_users, pcs_matrix, user, cluster_users, n_cluster, utility)
+                predictions.predicted_rating_by_age[i][j] = predict_by_age(i, avg, user)
+                predictions.predicted_rating_by_sex[i][j] = predict_by_sex(i, avg, user)
 
     print("\rPrediction [User:Rating] = [%d:%d]" % (i, j))
 
-    return utility_copy, rating_by_age, rating_by_sex
+    return predictions
 
 
 def mean_square_error(test, utility, n_users, n_items):

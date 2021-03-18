@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import math
 
-from recommendsystem.FileHelper import load_model_as_np
+from service.ModelService import load_model_as_np
 
 num_points = 943
 # find pcs_matrix relative to pearson algorithm (similarity matrix)

@@ -1,9 +1,8 @@
 from clustering.FindClusterInMatrix import find_cluster_in_matrix
-from recommendsystem.RecommendationHelper import create_avg_user, \
-    set_one_for_max_avg_value_others_zero, get_prediction, mean_square_error, \
-    cluster_mean_from_components, create_avg_ratings
-from antcolonyalgorithm.ApplyAntColonyAlgorithm import AntColonyHelper
-from recommendsystem.FileHelper import load_model_as_np, create_model
+from service.ModelService import load_model_as_np, create_model
+from service.RecommendationHelper import create_avg_user, \
+    set_one_for_max_avg_value_others_zero, mean_square_error, \
+    cluster_mean_from_components, create_avg_ratings, get_predictions
 import numpy as np
 
 
@@ -37,12 +36,12 @@ class ColdStartRecommendation:
 
         avg = create_avg_ratings(user, n_users, utility, n_items)
 
-        predicted_ratings, rating_by_age, rating_by_sex = get_prediction(utility, pcs_matrix, user, clustered_users, avg)
+        predictions = get_predictions(utility, pcs_matrix, user, clustered_users, avg)
 
         # test datası ile tehmin arasında MSE
-        mean_square_error(test, predicted_ratings, n_users, n_items)
-        mean_square_error(test, rating_by_age, n_users, n_items)
-        mean_square_error(test, rating_by_sex, n_users, n_items)
+        mean_square_error(test, predictions.predicted_ratings_by_aco, n_users, n_items)
+        mean_square_error(test, predictions.predicted_rating_by_age, n_users, n_items)
+        mean_square_error(test, predictions.predicted_rating_by_sex, n_users, n_items)
 
 
 if __name__ == '__main__':
