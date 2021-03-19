@@ -1,6 +1,14 @@
 from domain.Average import Average
 
 
+def create_averages(user, n_users, ratings, n_items):
+    # Calculate average value for user ratings and add to user object
+    user = create_avg_user(user, n_users, ratings)
+    avg = create_avg_ratings(user, n_users, ratings, n_items)
+
+    return user, avg
+
+
 def create_avg_user(user, n_users, utility_clustered):
     # her kullanıcının verdiği oyların ortalamaları User objesinde tutuluyor.
     for i in range(0, n_users):
@@ -60,6 +68,3 @@ def create_avg_ratings(user, n_users, ratings, n_items):
     avg.avg_female = avg.avg_female / avg.count_female
 
     return avg
-
-
-

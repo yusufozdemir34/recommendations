@@ -5,6 +5,20 @@ from domain.Dataset import Dataset
 from domain.User import User
 
 
+def prepare_data():
+    # find user_user_pearson relative to pearson algorithm
+    user_item_ratings_for_predict, user_item_ratings, user, item, user_user_pearson = load_model_as_np()
+    n_users = len(user)
+    n_items = len(item)
+    for i in range(0, n_users):
+        for j in range(0, n_items):
+            if user_item_ratings_for_predict[i][j] != user_item_ratings[i][j]:
+                user_item_ratings_for_predict[i][j] = -1
+                print("-1 yapilcaklar i: ", i, " j: ", j)
+
+    return user_item_ratings_for_predict, user_item_ratings, user, item, user_user_pearson, n_users, n_items
+
+
 def create_model():
     # verilerin tutulacağı diziler
     user = []
@@ -37,12 +51,6 @@ def create_model():
     base_user_item_ratings = np.zeros((n_users, n_items))
     for r in rating_test:
         base_user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
-    # verinin bir kismini sildim. sildigim datalari -1 olarak isaretliyoruz.
-    # daha sonra bunlari tahmin edeceğimizde hangilerini tahmin ettiğimizi bilmek icin -1 yapiyoruz.
-    for i in range(0, n_users):
-        for j in range(0, n_items):
-            if user_item_ratings[i][j] != base_user_item_ratings[i][j]:
-                user_item_ratings[i][j] == -1
 
     # clusteri kaldirdiğimizda ortalamayı nasıl bulup ekleyeceğiz.
     # prediction daki [cluster.labels_[j] yerine ne ekleycegiz
@@ -54,6 +62,12 @@ def create_model():
                 A = user_item_ratings[i]
                 B = user_item_ratings[j]
                 pcs_matrix[i][j], _ = pearsonr(A, B)
+    # verinin bir kismini sildim. sildigim datalari -1 olarak isaretliyoruz.
+    # daha sonra bunlari tahmin edeceğimizde hangilerini tahmin ettiğimizi bilmek icin -1 yapiyoruz.
+    for i in range(0, n_users):
+        for j in range(0, n_items):
+            if user_item_ratings[i][j] != base_user_item_ratings[i][j]:
+                user_item_ratings[i][j] == -1
     # store all records to nm array by being binary
     save_model_as_np(user_item_ratings, base_user_item_ratings, user, item, pcs_matrix)
     return user_item_ratings, base_user_item_ratings, user, item, pcs_matrix
