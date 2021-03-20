@@ -5,7 +5,7 @@ from clustering.FindClusterInMatrix import find_cluster_in_matrix_by_nx
 from service.AverageService import calculate_avg_for_kmeans, calculate_avg_for_pearson
 
 
-def create_clusters_by_pearson(ratings, user_user_pearson):
+def create_clusters_by_user_user_pearson(user_user_pearson):
     user_smilarity_top_list = np.zeros((943, 5))
 
     smilarity_value5 = 0
@@ -56,6 +56,11 @@ def create_clusters_by_pearson(ratings, user_user_pearson):
         total_ratings = 0
         count_ratings = 0
 
+    return user_smilarity_top_list
+
+
+def create_clusters_by_pearson(ratings, user_user_pearson):
+    user_smilarity_top_list = create_clusters_by_user_user_pearson(user_user_pearson)
     smilar_user_average_ratings = calculate_avg_for_pearson(user_smilarity_top_list, ratings, 943, 1682)
 
     return user_smilarity_top_list, smilar_user_average_ratings
