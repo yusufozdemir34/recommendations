@@ -1,5 +1,6 @@
 from domain.Average import Average
 from domain.KMeansDomain import KMeansDomain
+import numpy as np
 
 
 def create_averages(user, n_users, ratings, n_items):
@@ -16,6 +17,24 @@ def create_avg_user(user, n_users, utility_clustered):
         x = utility_clustered[i]
         user[i].avg_r = sum(a for a in x if a > 0) / sum(a > 0 for a in x)
     return user
+
+
+def calculate_avg_for_pearson(user_smilarity_top_list, ratings, n_users, n_items):
+    smilar_user_average_ratings = np.zeros((943, 1682))
+    total_rate = 0
+    count_rate = 0
+    for user_id in range(0, n_users):
+        for item_id in range(0, n_items):
+            for j in user_smilarity_top_list[user_id]:
+                similar_user_id = int(j)
+                if ratings[similar_user_id][item_id] != 0:
+                    total_rate = total_rate + ratings[similar_user_id][item_id]
+                    count_rate = count_rate + 1
+            if total_rate != 0 or count_rate != 0:
+                total_rate = total_rate / count_rate
+            smilar_user_average_ratings[user_id][item_id] = total_rate
+
+    return smilar_user_average_ratings
 
 
 def calculate_avg_for_kmeans(ratings, clusters, n_users, n_items):

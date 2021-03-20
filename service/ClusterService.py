@@ -2,7 +2,63 @@ import numpy as np
 from sklearn.cluster import KMeans
 # clear data for clustering
 from clustering.FindClusterInMatrix import find_cluster_in_matrix_by_nx
-from service.AverageService import calculate_avg_for_kmeans
+from service.AverageService import calculate_avg_for_kmeans, calculate_avg_for_pearson
+
+
+def create_clusters_by_pearson(ratings, user_user_pearson):
+    user_smilarity_top_list = np.zeros((943, 5))
+
+    smilarity_value5 = 0
+
+    for j in range(0, 942):
+        user1 = 1
+        user2 = 2
+        user3 = 3
+        user4 = 4
+        user5 = 5
+        smilarity_value1 = user_user_pearson[1][j]
+        smilarity_value2 = user_user_pearson[2][j]
+        smilarity_value3 = user_user_pearson[3][j]
+        smilarity_value4 = user_user_pearson[4][j]
+
+        for i in range(1, 942):  # sorting big to small
+            if smilarity_value1 <= user_user_pearson[i][j]:
+                user1 = i
+                smilarity_value2 = smilarity_value1
+                smilarity_value3 = smilarity_value2
+                smilarity_value4 = smilarity_value3
+                smilarity_value5 = smilarity_value4
+                smilarity_value1 = user_user_pearson[i][j]
+            elif smilarity_value2 <= user_user_pearson[i][j]:
+                user2 = i
+                smilarity_value3 = smilarity_value2
+                smilarity_value4 = smilarity_value3
+                smilarity_value5 = smilarity_value4
+                smilarity_value2 = user_user_pearson[i][j]
+            elif smilarity_value3 <= user_user_pearson[i][j]:
+                user3 = i
+                smilarity_value4 = smilarity_value3
+                smilarity_value5 = smilarity_value4
+                smilarity_value3 = user_user_pearson[i][j]
+            elif smilarity_value4 <= user_user_pearson[i][j]:
+                user4 = i
+                smilarity_value5 = smilarity_value4
+                smilarity_value4 = user_user_pearson[i][j]
+            elif smilarity_value5 <= user_user_pearson[i][j]:
+                user5 = i
+                smilarity_value5 = user_user_pearson[i][j]
+
+        user_smilarity_top_list[j][0] = user1
+        user_smilarity_top_list[j][1] = user2
+        user_smilarity_top_list[j][2] = user3
+        user_smilarity_top_list[j][3] = user4
+        user_smilarity_top_list[j][4] = user5
+        total_ratings = 0
+        count_ratings = 0
+
+    smilar_user_average_ratings = calculate_avg_for_pearson(user_smilarity_top_list, ratings, 943, 1682)
+
+    return user_smilarity_top_list, smilar_user_average_ratings
 
 
 def create_clusters_by_aco(n_users, user_user_pearson):

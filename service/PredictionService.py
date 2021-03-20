@@ -3,20 +3,24 @@ import numpy as np
 from domain.Prediction import Prediction
 
 
-def get_predictions(ratings, user, clusters_by_kmeans, kmeans_avg, cluster_users, avg):
-    predictions = Prediction(0, 0, 0, 0)
+def get_predictions(ratings, user, clusters_by_kmeans, kmeans_avg, cluster_users, avg, clusters_by_pearson,
+                    pearson_average_ratings):
+    predictions = Prediction(0, 0, 0, 0, 0)
     n_users = len(user)
     n_cluster = len(cluster_users)
     predictions.predicted_ratings_by_pearson = np.copy(ratings)
+    predictions.predicted_ratings_by_kmeans = np.copy(ratings)
     predictions.predicted_ratings_by_aco = np.copy(ratings)
     predictions.predicted_rating_by_age = np.copy(ratings)
     predictions.predicted_rating_by_sex = np.copy(ratings)
     for user_id in range(0, n_users):
         for item_id in range(0, 1682):
             if ratings[user_id][item_id] == -1:  # oy verilmemis item lara oy tahmini yap
-                predictions.predicted_ratings_by_pearson[user_id][item_id] = predict_for_kmeans(user_id,
-                                                                                                clusters_by_kmeans,
-                                                                                                kmeans_avg)
+                predictions.predicted_ratings_by_pearson[user_id][item_id] = pearson_average_ratings[user_id][item_id]
+
+                predictions.predicted_ratings_by_kmeans[user_id][item_id] = predict_for_kmeans(user_id,
+                                                                                               clusters_by_kmeans,
+                                                                                               kmeans_avg)
                 predictions.predicted_ratings_by_aco[user_id][item_id] = predict_for_aco(user_id, item_id, user,
                                                                                          cluster_users, ratings)
                 predictions.predicted_rating_by_age[user_id][item_id] = predict_by_age(user_id, avg, user)
@@ -131,6 +135,10 @@ def predict_by_sex(user_id, avg, user):
     return rate
 
 
+def predict_by_pearson(user_id, pearson_matrix, user):
+    return user
+
+
 def predict_for_kmeans(user_id, clusters_by_kmeans, kmeans_avg):
     rate = 0
     if clusters_by_kmeans[user_id] == 0:
@@ -169,39 +177,6 @@ def predict_for_aco(user_id, item_id, user, clustered_users, ratings):
                     # break
                 elif ratings[j][item_id] != 0:  # oy kullanmis kullanicilarin oyunu ver
                     rate = rate + ratings[j][item_id]
-                    count = count + 1
-
-            except:
-                print("An exception occurred", j)
-
-    # print(similarity)
-    return rate
-
-
-# user_id - oyu tahmin edilecek user
-# i_id - kullanıcının tahmin edilecek oyu verdiği item
-# bu yöntemle bir kullanicin oy vermediği öğeye verebileceği olası oyu tahmin ediyoruz
-# once kullanicinin bulunduğu kümeyi bulmaliyiz.
-# bu kümede verilen öğe için verilmiş ortalama oyu bulup kullanicinin kendi ortalamasına eklemeliyiz.
-def predict2(user_id, i_id, top_n, n_users, pcs_matrix, user, clustered_user, clusternumber, temp):
-    similarity = []
-    is_break = False
-    rate = user[user_id].avg_r
-    count = 1
-    for cluster in clustered_user:
-        if is_break:
-            if rate != 0 and count != 0:
-                rate = rate / count  # aynı kumedeki kullanicilarin vermis oldugu oyların ortalamasini bul
-            break  # outer loop break
-        rate = 0
-        for j in cluster:  # clusterlar uzerinde gez.
-            try:
-                if j == user_id:  # verilen kullanicinin hangi clusterda oldugunu bul
-                    similarity.append(cluster)
-                    is_break = True
-                    # break
-                elif temp[j][i_id] != 0:  # oy kullanmis kullanicilarin oyunu ver
-                    rate = rate + temp[j][i_id]
                     count = count + 1
 
             except:
