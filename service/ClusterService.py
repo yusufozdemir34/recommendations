@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 # clear data for clustering
 from clustering.FindClusterInMatrix import find_cluster_in_matrix_by_nx
+from service.AverageService import calculate_avg_for_kmeans
 
 
 def create_clusters_by_aco(n_users, user_user_pearson):
@@ -17,10 +18,10 @@ def create_clusters_by_aco(n_users, user_user_pearson):
     return clustered_users
 
 
-def cluster_by_kmeans(matris):
-    clusters = KMeans(n_clusters=5).fit_predict(matris)
-
-    return clusters
+def create_clusters_by_kmeans(ratings, n_users, n_items):
+    clusters_by_kmeans = KMeans(n_clusters=5).fit_predict(ratings)
+    avg = calculate_avg_for_kmeans(ratings, clusters_by_kmeans, n_users, n_items)
+    return clusters_by_kmeans, avg
 
 
 def set_one_for_max_avg_value_others_zero(data):

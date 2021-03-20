@@ -1,4 +1,5 @@
 from domain.Average import Average
+from domain.KMeansDomain import KMeansDomain
 
 
 def create_averages(user, n_users, ratings, n_items):
@@ -15,6 +16,37 @@ def create_avg_user(user, n_users, utility_clustered):
         x = utility_clustered[i]
         user[i].avg_r = sum(a for a in x if a > 0) / sum(a > 0 for a in x)
     return user
+
+
+def calculate_avg_for_kmeans(ratings, clusters, n_users, n_items):
+    avg = KMeansDomain(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+    for i in range(0, n_items):
+        for j in range(0, n_users):
+            cluster_no = clusters[j]
+            if cluster_no == 0 and ratings[j][i] != 0:
+                avg.avg_0 = avg.avg_0 + ratings[j][i]
+                avg.count_0 = avg.count_0 + 1
+            elif cluster_no == 1 and ratings[j][i] != 0:
+                avg.avg_1 = avg.avg_1 + ratings[j][i]
+                avg.count_1 = avg.count_1 + 1
+            elif cluster_no == 2 and ratings[j][i] != 0:
+                avg.avg_2 = avg.avg_2 + ratings[j][i]
+                avg.count_2 = avg.count_2 + 1
+            elif cluster_no == 3 and ratings[j][i] != 0:
+                avg.avg_3 = avg.avg_3 + ratings[j][i]
+                avg.count_3 = avg.count_3 + 1
+            elif cluster_no == 4 and ratings[j][i] != 0:
+                avg.avg_4 = avg.avg_4 + ratings[j][i]
+                avg.count_4 = avg.count_4 + 1
+
+    avg.avg_0 = avg.avg_0 / avg.count_0
+    avg.avg_1 = avg.avg_1 / avg.count_1
+    avg.avg_2 = avg.avg_2 / avg.count_2
+    avg.avg_3 = avg.avg_3 / avg.count_3
+    avg.avg_4 = avg.avg_4 / avg.count_4
+
+    return avg
 
 
 def create_avg_ratings(user, n_users, ratings, n_items):
