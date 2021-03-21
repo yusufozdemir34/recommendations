@@ -2,7 +2,7 @@ from service.ModelService import prepare_data
 from service.ClusterService import create_clusters_by_aco, create_clusters_by_kmeans, create_clusters_by_pearson
 from service.AverageService import create_averages
 from service.PredictionService import get_predictions
-from service.CalculateErrorService import calcuate_mean_error
+from service.CalculateErrorService import run_error_metrics
 
 
 # we have generally five parts. Model, cluster, average, prediction, calculating error
@@ -19,14 +19,13 @@ class ColdStartRecommendation:
         clusters_by_aco = create_clusters_by_aco(n_users, user_user_pearson)
         clusters_by_kmeans, kmeans_avg = create_clusters_by_kmeans(user_item_ratings, n_users, n_items)
 
-
-
         # 4. Part is predictions part
         predictions = get_predictions(user_item_ratings_for_predict, user, clusters_by_kmeans, kmeans_avg,
-                                      clusters_by_aco, averages_ratings_by_demographics, clusters_by_pearson, pearson_average_ratings)
+                                      clusters_by_aco, averages_ratings_by_demographics, clusters_by_pearson,
+                                      pearson_average_ratings)
 
         # 5. Part is error calculation part
-        calcuate_mean_error(predictions, user_item_ratings, n_users, n_items)
+        run_error_metrics(predictions, user_item_ratings, n_users, n_items)
 
 
 if __name__ == '__main__':
