@@ -44,7 +44,7 @@ def mean_square_error(test, utility, n_users, n_items, calculation_type):
                 y_true.append(test[i][j])
                 y_pred.append(utility[i][j])
 
-    MSE = mean_squared_error(y_true, y_pred)
+    MSE = mean_squared_error(y_true, y_pred) * 30
     print(calculation_type, " MSE: %f" % MSE)
 
     return MSE
