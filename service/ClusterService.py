@@ -81,8 +81,8 @@ def create_clusters_by_aco(n_users, user_user_pearson):
 
 def create_clusters_by_kmeans(ratings, n_users, n_items):
     clusters_by_kmeans = KMeans(n_clusters=5).fit_predict(ratings)
-    avg = calculate_avg_for_kmeans(ratings, clusters_by_kmeans, n_users, n_items)
-    return clusters_by_kmeans, avg
+    avg, average_ratings_for_items = calculate_avg_for_kmeans(ratings, clusters_by_kmeans, n_users, n_items)
+    return clusters_by_kmeans, avg, average_ratings_for_items
 
 
 def set_one_for_max_avg_value_others_zero(data):

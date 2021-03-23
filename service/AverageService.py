@@ -38,34 +38,45 @@ def calculate_avg_for_pearson(user_smilarity_top_list, ratings, n_users, n_items
 
 
 def calculate_avg_for_kmeans(ratings, clusters, n_users, n_items):
-    avg = KMeansDomain(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-    for i in range(0, n_items):
-        for j in range(0, n_users):
-            cluster_no = clusters[j]
-            if cluster_no == 0 and ratings[j][i] != 0:
-                avg.avg_0 = avg.avg_0 + ratings[j][i]
+    average_ratings_for_items = np.zeros((n_items, 5))
+    # item sayisi ve 5 cluster.
+    for item_id in range(0, n_items):
+        avg = KMeansDomain(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        for user_id in range(0, n_users):
+            cluster_no = clusters[user_id]
+            if cluster_no == 0 and ratings[user_id][item_id] != 0:
+                avg.avg_0 = avg.avg_0 + ratings[user_id][item_id]
                 avg.count_0 = avg.count_0 + 1
-            elif cluster_no == 1 and ratings[j][i] != 0:
-                avg.avg_1 = avg.avg_1 + ratings[j][i]
+            elif cluster_no == 1 and ratings[user_id][item_id] != 0:
+                avg.avg_1 = avg.avg_1 + ratings[user_id][item_id]
                 avg.count_1 = avg.count_1 + 1
-            elif cluster_no == 2 and ratings[j][i] != 0:
-                avg.avg_2 = avg.avg_2 + ratings[j][i]
+            elif cluster_no == 2 and ratings[user_id][item_id] != 0:
+                avg.avg_2 = avg.avg_2 + ratings[user_id][item_id]
                 avg.count_2 = avg.count_2 + 1
-            elif cluster_no == 3 and ratings[j][i] != 0:
-                avg.avg_3 = avg.avg_3 + ratings[j][i]
+            elif cluster_no == 3 and ratings[user_id][item_id] != 0:
+                avg.avg_3 = avg.avg_3 + ratings[user_id][item_id]
                 avg.count_3 = avg.count_3 + 1
-            elif cluster_no == 4 and ratings[j][i] != 0:
-                avg.avg_4 = avg.avg_4 + ratings[j][i]
+            elif cluster_no == 4 and ratings[user_id][item_id] != 0:
+                avg.avg_4 = avg.avg_4 + ratings[user_id][item_id]
                 avg.count_4 = avg.count_4 + 1
 
-    avg.avg_0 = avg.avg_0 / avg.count_0
-    avg.avg_1 = avg.avg_1 / avg.count_1
-    avg.avg_2 = avg.avg_2 / avg.count_2
-    avg.avg_3 = avg.avg_3 / avg.count_3
-    avg.avg_4 = avg.avg_4 / avg.count_4
+        if avg.count_0 != 0:
+            avg.avg_0 = avg.avg_0 / avg.count_0
+            average_ratings_for_items[item_id][0] = avg.avg_0
+        if avg.count_1 != 0:
+            avg.avg_1 = avg.avg_1 / avg.count_1
+            average_ratings_for_items[item_id][1] = avg.avg_1
+        if avg.count_2 != 0:
+            avg.avg_2 = avg.avg_2 / avg.count_2
+            average_ratings_for_items[item_id][2] = avg.avg_2
+        if avg.count_3 != 0:
+            avg.avg_3 = avg.avg_3 / avg.count_3
+            average_ratings_for_items[item_id][3] = avg.avg_3
+        if avg.count_4 != 0:
+            avg.avg_4 = avg.avg_4 / avg.count_4
+            average_ratings_for_items[item_id][4] = avg.avg_4
 
-    return avg
+    return avg ,average_ratings_for_items
 
 
 def create_avg_ratings(user, n_users, ratings, n_items):
