@@ -14,7 +14,7 @@ def prepare_data():
         for j in range(0, n_items):
             if user_item_ratings_for_predict[i][j] != user_item_ratings[i][j]:
                 user_item_ratings_for_predict[i][j] = -1
-                print("-1 yapilcaklar i: ", i, " j: ", j)
+                # print("-1 yapilarak tahmin edilecek oylar i: ", i, " j: ", j)
 
     return user_item_ratings_for_predict, user_item_ratings, user, item, user_user_pearson, n_users, n_items
 

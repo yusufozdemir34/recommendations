@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.cluster import KMeans
 # clear data for clustering
+from antcolonyalgorithm.ApplyAntColonyAlgorithm import AntColonyHelper
 from clustering.FindClusterInMatrix import find_cluster_in_matrix_by_nx
 from service.AverageService import calculate_avg_for_kmeans, calculate_avg_for_pearson
 
@@ -68,9 +69,12 @@ def create_clusters_by_pearson(ratings, user_user_pearson):
 
 def create_clusters_by_aco(n_users, user_user_pearson):
     # Apply ant colony optimization to the similarity matrix
-    # ant_colony_user_cluster = AntColonyHelper.ant_colony_by_acopy(n_users, pcs_matrix)
-    # np.save("../data/ant_colony_by_acopy.npy", ant_colony_user_cluster)
-    user_clusters_by_aco = np.load("../data/runned_data/ant_colony_by_acopy.npy")
+    # user_clusters_by_aco = AntColonyHelper.ant_colony_by_acopy(n_users, user_user_pearson)
+    # np.save("../data/runned_data/user_clusters_by_aco.npy", user_clusters_by_aco)
+    user_clusters_by_aco = np.load("../data/runned_data/user_clusters_by_aco.npy")
+
+
+
     result = np.array(user_clusters_by_aco)
     # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.
     result = set_one_for_max_avg_value_others_zero(result)
