@@ -76,7 +76,7 @@ def calculate_avg_for_kmeans(ratings, clusters, n_users, n_items):
             avg.avg_4 = avg.avg_4 / avg.count_4
             average_ratings_for_items[item_id][4] = avg.avg_4
 
-    return avg, average_ratings_for_items
+    return average_ratings_for_items
 
 
 def create_avg_ratings(user, n_users, ratings, n_items):
