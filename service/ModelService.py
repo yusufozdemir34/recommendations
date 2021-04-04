@@ -3,6 +3,7 @@ from scipy.stats import pearsonr
 
 from domain.Dataset import Dataset
 from domain.User import User
+from dto.DataDTO import DataDTO
 
 
 def prepare_data():
@@ -16,7 +17,9 @@ def prepare_data():
                 user_item_ratings_for_predict[i][j] = -1
                 # print("-1 yapilarak tahmin edilecek oylar i: ", i, " j: ", j)
 
-    return user_item_ratings_for_predict, user_item_ratings, user, item, user_user_pearson, n_users, n_items
+    dataDTO = DataDTO(user_item_ratings_for_predict, user_item_ratings, user, item, user_user_pearson, n_users, n_items)
+    return dataDTO
+    # user_item_ratings_for_predict, user_item_ratings, user, item, user_user_pearson, n_users, n_items
 
 
 def create_model():

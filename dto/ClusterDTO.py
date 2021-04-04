@@ -7,3 +7,4 @@ class Clusters:
         self.clusters_by_kmeans = clusters_by_kmeans
         self.kmeans_avg = kmeans_avg
         self.average_ratings_for_item_kmeans = average_ratings_for_item_kmeans
+        self.averages_ratings_by_demographics = 0

@@ -9,11 +9,11 @@ from geneticalgorithm.ApplyGeneticAlgorithm import GeneticAlgorithm
 from service.AverageService import calculate_avg_for_kmeans, calculate_avg_for_pearson
 
 
-def create_clusters(user_item_ratings, user_user_pearson, n_users, n_items):
-    clusters_by_pearson, pearson_average_ratings = create_clusters_by_pearson(user_item_ratings, user_user_pearson)
-    clusters_by_aco = create_clusters_by_aco(n_users, user_user_pearson)
-    clusters_by_kmeans, kmeans_avg, average_ratings_for_item_kmeans = create_clusters_by_kmeans(user_item_ratings,
-                                                                                                n_users, n_items)
+def create_clusters(data):
+    clusters_by_pearson, pearson_average_ratings = create_clusters_by_pearson(data.user_item_ratings, data.user_user_pearson)
+    clusters_by_aco = create_clusters_by_aco(data.n_users, data.user_user_pearson)
+    clusters_by_kmeans, kmeans_avg, average_ratings_for_item_kmeans = create_clusters_by_kmeans(data.user_item_ratings,
+                                                                                                data.n_users, data.n_items)
     clusters = Clusters(clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_kmeans, kmeans_avg,
                         average_ratings_for_item_kmeans)
     return clusters

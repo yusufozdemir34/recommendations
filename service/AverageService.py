@@ -3,12 +3,12 @@ from domain.KMeansDomain import KMeansDomain
 import numpy as np
 
 
-def create_averages(user, n_users, ratings, n_items):
+def create_averages(data):
     # Calculate average value for user ratings and add to user object
-    user = create_avg_user(user, n_users, ratings)
-    avg = create_avg_ratings(user, n_users, ratings, n_items)
+    data.user = create_avg_user(data.user, data.n_users, data.user_item_ratings)
+    avg = create_avg_ratings(data.user, data.n_users, data.user_item_ratings, data.n_items)
 
-    return user, avg
+    return data.user, avg
 
 
 def create_avg_user(user, n_users, utility_clustered):
