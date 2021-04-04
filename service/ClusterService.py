@@ -4,6 +4,7 @@ from sklearn import preprocessing
 # clear data for clustering
 from antcolonyalgorithm.ApplyAntColonyAlgorithm import AntColonyHelper
 from clustering.FindClusterInMatrix import find_cluster_in_matrix_by_nx
+from dto.ClusterDTO import Clusters
 from geneticalgorithm.ApplyGeneticAlgorithm import GeneticAlgorithm
 from service.AverageService import calculate_avg_for_kmeans, calculate_avg_for_pearson
 
@@ -13,8 +14,10 @@ def create_clusters(user_item_ratings, user_user_pearson, n_users, n_items):
     clusters_by_aco = create_clusters_by_aco(n_users, user_user_pearson)
     clusters_by_kmeans, kmeans_avg, average_ratings_for_item_kmeans = create_clusters_by_kmeans(user_item_ratings,
                                                                                                 n_users, n_items)
-
-    return clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_kmeans, kmeans_avg, average_ratings_for_item_kmeans
+    clusters = Clusters(clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_kmeans, kmeans_avg,
+                        average_ratings_for_item_kmeans)
+    return clusters
+    #clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_kmeans, kmeans_avg, average_ratings_for_item_kmeans
 
 
 def normalize(matrix_data):
@@ -44,9 +47,9 @@ def create_clusters_by_ga(n_users, user_user_pearson):
 def create_clusters_by_aco(n_users, user_user_pearson):
     # Apply ant colony optimization to the similarity matrix
     # norm_data = normalize(user_user_pearson)
-    user_clusters_by_aco = AntColonyHelper.ant_colony_by_acopy(n_users, user_user_pearson)
+    # user_clusters_by_aco = AntColonyHelper.ant_colony_by_acopy(n_users, user_user_pearson)
     # np.save("../data/runned_data/user_clusters_by_aco.npy", user_clusters_by_aco)
-    # user_clusters_by_aco = np.load("../data/runned_data/user_clusters_by_aco.npy")
+    user_clusters_by_aco = np.load("../data/runned_data/user_clusters_by_aco.npy")
 
     result = np.array(user_clusters_by_aco)
     # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.
@@ -144,4 +147,3 @@ def create_clusters_by_user_user_pearson(user_user_pearson):
         count_ratings = 0
 
     return user_smilarity_top_list
-
