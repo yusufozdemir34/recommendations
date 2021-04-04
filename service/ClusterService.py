@@ -17,7 +17,7 @@ def create_clusters(data):
     clusters = Clusters(clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_kmeans, kmeans_avg,
                         average_ratings_for_item_kmeans)
 
-    data.user, clusters.averages_ratings_by_demographics = create_averages(data)
+    data.user, clusters.average_ratings_for_age_by_items, clusters.average_ratings_for_sex_by_items = create_averages(data)
 
     return clusters, data
     #clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_kmeans, kmeans_avg, average_ratings_for_item_kmeans

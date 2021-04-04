@@ -25,8 +25,8 @@ def get_predictions(dataDTO, clusters):
                                                                                                clusters.kmeans_avg, dataDTO.user)
                 predictions.predicted_ratings_by_aco[user_id][item_id] = predict_for_aco(user_id, item_id, dataDTO.user,
                                                                                          clusters.clusters_by_aco, dataDTO.user_item_ratings_for_predict)
-                predictions.predicted_rating_by_age[user_id][item_id] = predict_by_age(user_id, clusters.averages_ratings_by_demographics, dataDTO.user)
-                predictions.predicted_rating_by_sex[user_id][item_id] = predict_by_sex(user_id, clusters.averages_ratings_by_demographics, dataDTO.user)
+                predictions.predicted_rating_by_age[user_id][item_id] = predict_by_age(user_id, item_id, clusters.average_ratings_for_age_by_items, dataDTO.user)
+                predictions.predicted_rating_by_sex[user_id][item_id] = predict_by_sex(user_id, item_id, clusters.average_ratings_for_sex_by_items, dataDTO.user)
 
     print("\rPrediction [User:Rating] = [%d:%d]" % (user_id, item_id))
 
@@ -115,25 +115,25 @@ def predict(user_id, i_id, top_n, n_users, pcs_matrix, user, clustered_user, clu
         return rate
 
 
-def predict_by_age(user_id, avg, user):
+def predict_by_age(user_id, item_id, average_ratings_for_age_by_items, user):
     rate = 0
     if user[user_id].age < 30:
-        rate = avg.avg_twenty
+        rate = average_ratings_for_age_by_items[item_id][0] # avg.avg_twenty
     elif user[user_id].age < 40:
-        rate = avg.avg_thirty
+        rate = average_ratings_for_age_by_items[item_id][1]
     elif user[user_id].age < 50:
-        rate = avg.avg_forty
+        rate = average_ratings_for_age_by_items[item_id][2]
     else:
-        rate = avg.avg_fifty
+        rate = average_ratings_for_age_by_items[item_id][3]
     return rate
 
 
-def predict_by_sex(user_id, avg, user):
+def predict_by_sex(user_id, item_id, average_ratings_for_sex_by_items, user):
     rate = 0
     if user[user_id].sex == 'M':
-        rate = avg.avg_male
+        rate = average_ratings_for_sex_by_items[item_id][0]
     else:
-        rate = avg.avg_female
+        rate = average_ratings_for_sex_by_items[item_id][1]
     return rate
 
 
