@@ -13,10 +13,10 @@ class ColdStartRecommendation:
         dataDTO = prepare_data()
 
         # 2. Part is  cluster part
-        clusters = create_clusters(dataDTO)
+        clusters, dataDTO = create_clusters(dataDTO)
 
         # 3. Part is  average calculation part
-        dataDTO.user, clusters.averages_ratings_by_demographics = create_averages(dataDTO)
+       # dataDTO.user, clusters.averages_ratings_by_demographics = create_averages(dataDTO)
 
         # 4. Part is predictions part
         predictions = get_predictions(dataDTO, clusters)

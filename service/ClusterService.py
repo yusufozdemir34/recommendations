@@ -6,7 +6,7 @@ from antcolonyalgorithm.ApplyAntColonyAlgorithm import AntColonyHelper
 from clustering.FindClusterInMatrix import find_cluster_in_matrix_by_nx
 from dto.ClusterDTO import Clusters
 from geneticalgorithm.ApplyGeneticAlgorithm import GeneticAlgorithm
-from service.AverageService import calculate_avg_for_kmeans, calculate_avg_for_pearson
+from service.AverageService import calculate_avg_for_kmeans, calculate_avg_for_pearson, create_averages
 
 
 def create_clusters(data):
@@ -16,7 +16,10 @@ def create_clusters(data):
                                                                                                 data.n_users, data.n_items)
     clusters = Clusters(clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_kmeans, kmeans_avg,
                         average_ratings_for_item_kmeans)
-    return clusters
+
+    data.user, clusters.averages_ratings_by_demographics = create_averages(data)
+
+    return clusters, data
     #clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_kmeans, kmeans_avg, average_ratings_for_item_kmeans
 
 
