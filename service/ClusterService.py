@@ -68,10 +68,10 @@ def create_clusters_by_aco(n_users, user_user_pearson):
     # np.save("../data/runned_data/user_clusters_by_aco.npy", user_clusters_by_aco)
     user_clusters_by_aco = np.load("../data/runned_data/user_clusters_by_aco.npy")
 
-    result = np.array(user_clusters_by_aco)
-    # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.
-    result = set_one_for_max_avg_value_others_zero(result)
-    clustered_users = find_cluster_in_matrix(result, n_users)
+    # result = np.array(user_clusters_by_aco)
+    # # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.
+    # result = set_one_for_max_avg_value_others_zero(result)
+    # clustered_users = find_cluster_in_matrix(result, n_users)
 
     return user_clusters_by_aco
 

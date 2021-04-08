@@ -14,7 +14,9 @@ from sko.ACA import ACA_TSP
 class AntColonyHelper:
     def ant_colony_by_acopy(n_users, pcs_matrix):
         num_points = n_users
+        points_coordinate = np.random.rand(num_points, 2)  # generate coordinate of points
 
+        distance_matrix = spatial.distance.cdist(pcs_matrix, pcs_matrix, metric='euclidean')
 
         def cal_total_distance(routine):
             num_points, = routine.shape
@@ -22,8 +24,8 @@ class AntColonyHelper:
 
 
         aca = ACA_TSP(func=cal_total_distance, n_dim=num_points,
-                      size_pop=11, max_iter=11,
-                      distance_matrix=pcs_matrix)
+                      size_pop=50, max_iter=50,
+                      distance_matrix=distance_matrix)
 
         best_x, best_y = aca.run()
 
