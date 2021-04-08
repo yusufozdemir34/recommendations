@@ -24,9 +24,11 @@ def get_predictions(dataDTO, clusters):
                                                                                                clusters.average_ratings_for_item_kmeans,
                                                                                                clusters.clusters_by_kmeans,
                                                                                                dataDTO.user)
-                predictions.predicted_ratings_by_aco[user_id][item_id] = predict_for_aco(user_id, item_id, dataDTO.user,
-                                                                                         clusters.clusters_by_aco,
-                                                                                         dataDTO.user_item_ratings_for_predict)
+                predictions.predicted_ratings_by_aco[user_id][item_id] = predict_for_kmeans(user_id, item_id,
+                                                                                               clusters.average_ratings_for_item_aco,
+                                                                                               clusters.clusters_by_aco,
+                                                                                               dataDTO.user)
+
                 predictions.predicted_rating_by_age[user_id][item_id] = predict_by_age(user_id, item_id,
                                                                                        clusters.average_ratings_for_age_by_items,
                                                                                        dataDTO.user)
