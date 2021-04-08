@@ -14,9 +14,7 @@ from sko.ACA import ACA_TSP
 class AntColonyHelper:
     def ant_colony_by_acopy(n_users, pcs_matrix):
         num_points = n_users
-        points_coordinate = np.random.rand(num_points, 2)  # generate coordinate of points
 
-        distance_matrix = spatial.distance.cdist(pcs_matrix, pcs_matrix, metric='euclidean')
 
         def cal_total_distance(routine):
             num_points, = routine.shape
@@ -25,17 +23,10 @@ class AntColonyHelper:
 
         aca = ACA_TSP(func=cal_total_distance, n_dim=num_points,
                       size_pop=11, max_iter=11,
-                      distance_matrix=distance_matrix)
+                      distance_matrix=pcs_matrix)
 
         best_x, best_y = aca.run()
 
-        # %% Plot
-        fig, ax = plt.subplots(1, 2)
-        best_points_ = np.concatenate([best_x, [best_x[0]]])
-        best_points_coordinate = points_coordinate[best_points_, :]
-        ax[0].plot(best_points_coordinate[:, 0], best_points_coordinate[:, 1], 'o-r')
-        pd.DataFrame(aca.y_best_history).cummin().plot(ax=ax[1])
-        plt.show()
         return aca.Tau
 
     # clust with ant colony optimization
