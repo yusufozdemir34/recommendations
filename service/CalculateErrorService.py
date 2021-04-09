@@ -17,9 +17,9 @@ def run_mean_absolute_error(predictions, user_item_ratings, n_users, n_items):
                                 "Predicted Ratings by Sex    ")
 
 
-def run_error_metrics(predictions, user_item_ratings, n_users, n_items):
-    run_mean_square_error(predictions, user_item_ratings, n_users, n_items)
-    run_mean_absolute_error(predictions, user_item_ratings, n_users, n_items)
+def run_error_metrics(predictions, data):
+    run_mean_square_error(predictions, data.user_item_ratings,data.n_users, data.n_items)
+    run_mean_absolute_error(predictions, data.user_item_ratings, data.n_users, data.n_items)
 
 
 def run_mean_square_error(predictions, user_item_ratings, n_users, n_items):
