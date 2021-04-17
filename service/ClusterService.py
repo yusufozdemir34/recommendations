@@ -12,15 +12,16 @@ from service.AverageService import calculate_avg_for_kmeans, calculate_avg_for_p
 def create_clusters(data):
     clusters_by_pearson, pearson_average_ratings = create_clusters_by_pearson(data.user_item_ratings,
                                                                               data.user_user_pearson)
-    clusters_by_aco = create_clusters_by_aco(data.n_users, data.user_user_pearson)
+    tau_by_aco = create_tau_by_aco(data.n_users, data.user_user_pearson)
+    clusters_by_aco = create_clusters_by_aco(data.n_users, tau_by_aco)
     clusters_by_aco_kmeans, average_ratings_for_item_aco = create_clusters_by_aco_kmeans(data.user_item_ratings,
                                                                                          data.n_users, data.n_items,
-                                                                                         clusters_by_aco)
+                                                                                         tau_by_aco)
 
     clusters_by_kmeans, average_ratings_for_item_kmeans = create_clusters_by_kmeans(
         data.user_item_ratings, data.n_users, data.n_items)
 
-    clusters = Clusters(clusters_by_pearson, pearson_average_ratings, clusters_by_aco_kmeans,
+    clusters = Clusters(clusters_by_pearson, pearson_average_ratings, clusters_by_aco, clusters_by_aco_kmeans,
                         average_ratings_for_item_aco, clusters_by_kmeans,
                         average_ratings_for_item_kmeans)
 
@@ -54,26 +55,29 @@ def create_clusters_by_ga(n_users, user_user_pearson):
     clustered_users = find_cluster_in_matrix(result, n_users)
 
 
-def create_clusters_by_aco_kmeans(ratings, n_users, n_items, clusters_by_aco):
-    clusters_by_aco_kmeans = KMeans(n_clusters=5).fit_predict(clusters_by_aco)
+def create_clusters_by_aco_kmeans(ratings, n_users, n_items, tau_by_aco):
+    clusters_by_aco_kmeans = KMeans(n_clusters=5).fit_predict(tau_by_aco)
     average_ratings_for_items = calculate_avg_for_kmeans(ratings, clusters_by_aco_kmeans, n_users, n_items)
 
     return clusters_by_aco_kmeans, average_ratings_for_items
 
 
-def create_clusters_by_aco(n_users, user_user_pearson):
+def create_tau_by_aco(n_users, user_user_pearson):
     # Apply ant colony optimization to the similarity matrix
     # norm_data = normalize(user_user_pearson)
     # user_clusters_by_aco = AntColonyHelper.ant_colony_by_acopy(n_users, user_user_pearson)
     # np.save("../data/runned_data/user_clusters_by_aco.npy", user_clusters_by_aco)
-    user_clusters_by_aco = np.load("../data/runned_data/user_clusters_by_aco.npy")
+    tau_by_aco = np.load("../data/runned_data/user_clusters_by_aco.npy")
+    return tau_by_aco
 
-    # result = np.array(user_clusters_by_aco)
-    # # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.
-    # result = set_one_for_max_avg_value_others_zero(result)
-    # clustered_users = find_cluster_in_matrix(result, n_users)
 
-    return user_clusters_by_aco
+def create_clusters_by_aco(n_users, user_clusters_by_aco):
+    result = np.array(user_clusters_by_aco)
+    # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.
+    result = set_one_for_max_avg_value_others_zero(result)
+    clustered_users = find_cluster_in_matrix(result, n_users)
+
+    return clustered_users
 
 
 def create_clusters_by_kmeans(ratings, n_users, n_items):
