@@ -43,7 +43,8 @@ def normalize(matrix_data):
 
 def create_clusters_by_pearson(ratings, user_user_pearson):
     user_smilarity_top_list = create_clusters_by_user_user_pearson(user_user_pearson)
-    smilar_user_average_ratings = calculate_avg_for_pearson(user_smilarity_top_list, ratings, 943, 1682)
+    smilar_user_average_ratings = calculate_avg_for_pearson(user_smilarity_top_list, ratings, np.size(ratings, 0),
+                                                            np.size(ratings, 1))
 
     return user_smilarity_top_list, smilar_user_average_ratings
 
@@ -65,9 +66,9 @@ def create_clusters_by_aco_kmeans(ratings, n_users, n_items, tau_by_aco):
 def create_tau_by_aco(n_users, user_user_pearson):
     # Apply ant colony optimization to the similarity matrix
     # norm_data = normalize(user_user_pearson)
-    # user_clusters_by_aco = AntColonyHelper.ant_colony_by_acopy(n_users, user_user_pearson)
+    tau_by_aco = AntColonyHelper.ant_colony_by_acopy(user_user_pearson)
     # np.save("../data/runned_data/user_clusters_by_aco.npy", user_clusters_by_aco)
-    tau_by_aco = np.load("../data/runned_data/user_clusters_by_aco.npy")
+    # tau_by_aco = np.load("../data/runned_data/user_clusters_by_aco.npy")
     return tau_by_aco
 
 
@@ -118,11 +119,11 @@ def cluster_mean_from_components(utility, components):
 
 
 def create_clusters_by_user_user_pearson(user_user_pearson):
-    user_smilarity_top_list = np.zeros((943, 5))
+    user_smilarity_top_list = np.zeros((np.size(user_user_pearson, 0), 5))
 
     smilarity_value5 = 0
 
-    for j in range(0, 942):
+    for j in range(0, np.size(user_user_pearson, 0)):
         user1 = 1
         user2 = 2
         user3 = 3
@@ -133,7 +134,7 @@ def create_clusters_by_user_user_pearson(user_user_pearson):
         smilarity_value3 = user_user_pearson[3][j]
         smilarity_value4 = user_user_pearson[4][j]
 
-        for i in range(1, 942):  # sorting big to small
+        for i in range(1, np.size(user_user_pearson, 1)):  # sorting big to small
             if smilarity_value1 <= user_user_pearson[i][j]:
                 user1 = i
                 smilarity_value2 = smilarity_value1

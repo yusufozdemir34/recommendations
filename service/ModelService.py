@@ -4,6 +4,7 @@ from scipy.stats import pearsonr
 from domain.Dataset import Dataset
 from domain.User import User
 from dto.DataDTO import DataDTO
+from sklearn.model_selection import train_test_split
 
 
 def prepare_data():
@@ -55,25 +56,28 @@ def create_model():
     for r in rating_test:
         base_user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
 
+    t2, t1, user_item_ratings_for_predict, t3 = train_test_split(user_item_ratings,
+                                                     user_item_ratings,
+                                                     test_size=0.8, random_state=0)
+
     # clusteri kaldirdiğimizda ortalamayı nasıl bulup ekleyeceğiz.
     # prediction daki [cluster.labels_[j] yerine ne ekleycegiz
-    pcs_matrix = np.zeros((n_users, n_users))
+    pcs_matrix = np.zeros((np.size(user_item_ratings_for_predict, 0), np.size(user_item_ratings_for_predict, 0)))
 
-    for i in range(0, n_users):
+    for i in range(0, np.size(user_item_ratings_for_predict, 0)):
         for j in range(0, i):
             if i != j:
                 A = user_item_ratings[i]
                 B = user_item_ratings[j]
                 pcs_matrix[i][j], _ = pearsonr(A, B)
-    # verinin bir kismini sildim. sildigim datalari -1 olarak isaretliyoruz.
-    # daha sonra bunlari tahmin edeceğimizde hangilerini tahmin ettiğimizi bilmek icin -1 yapiyoruz.
-    for i in range(0, n_users):
-        for j in range(0, n_items):
-            if user_item_ratings[i][j] != base_user_item_ratings[i][j]:
-                user_item_ratings[i][j] == -1
-    # store all records to nm array by being binary
-    save_model_as_np(user_item_ratings, base_user_item_ratings, user, item, pcs_matrix)
-    return user_item_ratings, base_user_item_ratings, user, item, pcs_matrix
+
+    n_users = np.size(user_item_ratings_for_predict, 0)
+    n_items = np.size(user_item_ratings_for_predict, 1)
+
+    dataDTO = DataDTO(user_item_ratings_for_predict, user_item_ratings_for_predict, user, item, pcs_matrix, n_users,
+                      n_items)
+
+    return dataDTO
 
 
 def save_model_as_np(utility, test, user, item, pcs_matrix):
