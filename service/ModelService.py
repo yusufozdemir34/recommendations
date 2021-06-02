@@ -4,7 +4,7 @@ from scipy.stats import pearsonr
 from domain.Dataset import Dataset
 from domain.User import User
 from dto.DataDTO import DataDTO
-from sklearn.model_selection import train_test_split
+
 
 
 def prepare_data():
@@ -35,8 +35,8 @@ def create_model():
     d = Dataset()
     d.load_users("../data/u.user", user)
     d.load_items("../data/u.item", item)
-    d.load_ratings("../data/uayusuf.base", rating)
-    d.load_ratings("../data/ua.base", rating_test)
+    d.load_ratings("../data/u3.base", rating)
+    d.load_ratings("../data/u3.test", rating_test)
 
     n_users = len(user)
     n_items = len(item)
@@ -46,35 +46,31 @@ def create_model():
     # NumPy sıfırlar işlevi, yalnızca sıfır içeren NumPy dizileri oluşturmanıza olanak sağlar.
     # Daha da önemlisi, bu işlev dizinin tam boyutlarını belirlemenizi sağlar.
     # Ayrıca tam veri türünü belirlemenize de olanak tanır.
-    user_item_ratings = np.zeros((n_users, n_items))
+    training_user_item_ratings = np.zeros((n_users, n_items))
     for r in rating:
-        user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
+        training_user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
 
     # print(utility)
 
-    base_user_item_ratings = np.zeros((n_users, n_items))
+    test_user_item_ratings = np.zeros((n_users, n_items))
     for r in rating_test:
-        base_user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
-
-    t2, t1, user_item_ratings_for_predict, t3 = train_test_split(user_item_ratings,
-                                                     user_item_ratings,
-                                                     test_size=0.8, random_state=0)
+        test_user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
 
     # clusteri kaldirdiğimizda ortalamayı nasıl bulup ekleyeceğiz.
     # prediction daki [cluster.labels_[j] yerine ne ekleycegiz
-    pcs_matrix = np.zeros((np.size(user_item_ratings_for_predict, 0), np.size(user_item_ratings_for_predict, 0)))
+    pcs_matrix = np.zeros((np.size(training_user_item_ratings, 0), np.size(training_user_item_ratings, 0)))
 
-    for i in range(0, np.size(user_item_ratings_for_predict, 0)):
+    for i in range(0, np.size(training_user_item_ratings, 0)):
         for j in range(0, i):
             if i != j:
-                A = user_item_ratings[i]
-                B = user_item_ratings[j]
+                A = training_user_item_ratings[i]
+                B = training_user_item_ratings[j]
                 pcs_matrix[i][j], _ = pearsonr(A, B)
 
-    n_users = np.size(user_item_ratings_for_predict, 0)
-    n_items = np.size(user_item_ratings_for_predict, 1)
+    n_users = np.size(test_user_item_ratings, 0)
+    n_items = np.size(test_user_item_ratings, 1)
 
-    dataDTO = DataDTO(user_item_ratings_for_predict, user_item_ratings_for_predict, user, item, pcs_matrix, n_users,
+    dataDTO = DataDTO(test_user_item_ratings, training_user_item_ratings, user, item, pcs_matrix, n_users,
                       n_items)
 
     return dataDTO

@@ -6,8 +6,8 @@ from dto.ErrorDTO import ErrorPercentage
 
 def run_error_metrics(predictions, data):
     error = ErrorPercentage(data)
-    error = run_mean_square_error(predictions, data.user_item_ratings, data.n_users, data.n_items, error)
-    error = run_mean_absolute_error(predictions, data.user_item_ratings, data.n_users, data.n_items, error)
+    error = run_mean_square_error(predictions, data.user_item_ratings_for_predict, data.n_users, data.n_items, error)
+    error = run_mean_absolute_error(predictions, data.user_item_ratings_for_predict, data.n_users, data.n_items, error)
 
     return error
 

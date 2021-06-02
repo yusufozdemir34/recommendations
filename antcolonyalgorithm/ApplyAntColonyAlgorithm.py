@@ -24,7 +24,7 @@ class AntColonyHelper:
 
 
         aca = ACA_TSP(func=cal_total_distance, n_dim=num_points,
-                      size_pop=5, max_iter=5,
+                      size_pop=20, max_iter=10,
                       distance_matrix=distance_matrix)
 
         best_x, best_y = aca.run()

@@ -96,7 +96,31 @@ def calculate_avg_for_pearson(user_smilarity_top_list, ratings, n_users, n_items
 
     return smilar_user_average_ratings
 
+def calculate_avg_for_aco(user_id, item_id, user, clustered_users, ratings):
+    is_break = False
+    rate = user[user_id].avg_r
+    count = 1
+    for cluster in clustered_users:
+        if is_break:
+            if rate != 0 and count != 0:
+                rate = rate / count  # aynı kumedeki kullanicilarin vermis oldugu oyların ortalamasini bul
+            break  # outer loop break
+        rate = 0
+        for j in cluster:  # clusterlar uzerinde gez.
+            try:
+                if j == user_id:  # verilen kullanicinin hangi clusterda oldugunu bul
+                    # similarity.append(cluster)
+                    is_break = True
+                    # break
+                elif ratings[j][item_id] != 0:  # oy kullanmis kullanicilarin oyunu ver
+                    rate = rate + ratings[j][item_id]
+                    count = count + 1
 
+            except:
+                print("An exception occurred", j)
+
+    # print(similarity)
+    return rate
 def calculate_avg_for_kmeans(ratings, clusters, n_users, n_items):
     average_ratings_for_items = np.zeros((n_items, 5))
     # item sayisi ve 5 cluster.

@@ -13,7 +13,7 @@ def create_clusters(data):
     clusters_by_pearson, pearson_average_ratings = create_clusters_by_pearson(data.user_item_ratings,
                                                                               data.user_user_pearson)
     tau_by_aco = create_tau_by_aco(data.n_users, data.user_user_pearson)
-    clusters_by_aco = create_clusters_by_aco(data.n_users, tau_by_aco)
+    clusters_by_aco, average_ratings_for_aco = create_clusters_by_aco(data.n_users, tau_by_aco)
     clusters_by_aco_kmeans, average_ratings_for_item_aco = create_clusters_by_aco_kmeans(data.user_item_ratings,
                                                                                          data.n_users, data.n_items,
                                                                                          tau_by_aco)
@@ -73,12 +73,13 @@ def create_tau_by_aco(n_users, user_user_pearson):
 
 
 def create_clusters_by_aco(n_users, user_clusters_by_aco):
+    average_ratings_for_aco = 0
     result = np.array(user_clusters_by_aco)
     # Assign values 1 and 0 to disable places that some ants use for exploration and could find less or nothing.
     result = set_one_for_max_avg_value_others_zero(result)
     clustered_users = find_cluster_in_matrix(result, n_users)
 
-    return clustered_users
+    return clustered_users, average_ratings_for_aco
 
 
 def create_clusters_by_kmeans(ratings, n_users, n_items):

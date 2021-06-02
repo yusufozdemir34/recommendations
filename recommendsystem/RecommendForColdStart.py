@@ -29,9 +29,9 @@ class ColdStartRecommendation:
 
 if __name__ == '__main__':
     error1 = ColdStartRecommendation.run_recommendation(19)
-    error2 = ColdStartRecommendation.run_recommendation(19)
-    error3 = ColdStartRecommendation.run_recommendation(19)
-    error4 = ColdStartRecommendation.run_recommendation(19)
-    error5 = ColdStartRecommendation.run_recommendation(19)
-
-    error = calculate_average_for_errors(error1, error2, error3, error4, error5)
+    # error2 = ColdStartRecommendation.run_recommendation(19)
+    # error3 = ColdStartRecommendation.run_recommendation(19)
+    # error4 = ColdStartRecommendation.run_recommendation(19)
+    # error5 = ColdStartRecommendation.run_recommendation(19)
+    #
+    # error = calculate_average_for_errors(error1, error2, error3, error4, error5)
