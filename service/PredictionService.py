@@ -7,16 +7,17 @@ def get_predictions(dataDTO, clusters):
     # ratings,user, clusters_by_kmeans, kmeans_avg, average_ratings_for_item_kmeans, cluster_users, avg, clusters_by_pearson,pearson_average_ratings):
     # clusters.clusters_by_aco, clusters.averages_ratings_by_demographics, clusters.clusters_by_pearson,
     # clusters.pearson_average_ratings)
-    predictions = Prediction(0, 0, 0, 0, 0)
+    predictions = Prediction(0, 0, 0, 0, 0, 0)
     # n_users = len(user)
     predictions.predicted_ratings_by_pearson = np.copy(dataDTO.user_item_ratings_for_predict)
     predictions.predicted_ratings_by_kmeans = np.copy(dataDTO.user_item_ratings_for_predict)
     predictions.predicted_ratings_by_aco = np.copy(dataDTO.user_item_ratings_for_predict)
+    predictions.predicted_ratings_by_aco_kmeans = np.copy(dataDTO.user_item_ratings_for_predict)
     predictions.predicted_rating_by_age = np.copy(dataDTO.user_item_ratings_for_predict)
     predictions.predicted_rating_by_sex = np.copy(dataDTO.user_item_ratings_for_predict)
     for user_id in range(0, dataDTO.n_users):
-        for item_id in range(0, 1682):
-            if dataDTO.user_item_ratings_for_predict[user_id][item_id] == -1:  # oy verilmemis item lara oy tahmini yap
+        for item_id in range(0, dataDTO.n_items):
+            if dataDTO.user_item_ratings_for_predict[user_id][item_id] != 0:
                 predictions.predicted_ratings_by_pearson[user_id][item_id] = clusters.pearson_average_ratings[user_id][
                     item_id]
 
@@ -24,10 +25,13 @@ def get_predictions(dataDTO, clusters):
                                                                                                clusters.average_ratings_for_item_kmeans,
                                                                                                clusters.clusters_by_kmeans,
                                                                                                dataDTO.user)
-                predictions.predicted_ratings_by_aco[user_id][item_id] = predict_for_kmeans(user_id, item_id,
-                                                                                               clusters.average_ratings_for_item_aco,
-                                                                                               clusters.clusters_by_aco,
-                                                                                               dataDTO.user)
+                predictions.predicted_ratings_by_aco[user_id][item_id] = predict_for_aco(user_id, item_id, dataDTO.user,
+                                                                                         clusters.clusters_by_aco,
+                                                                                         dataDTO.user_item_ratings_for_predict)
+                predictions.predicted_ratings_by_aco_kmeans[user_id][item_id] = predict_for_aco_kmeans(user_id, item_id,
+                                                                                                       clusters.average_ratings_for_item_aco,
+                                                                                                       clusters.clusters_by_aco_kmeans,
+                                                                                                       dataDTO.user)
 
                 predictions.predicted_rating_by_age[user_id][item_id] = predict_by_age(user_id, item_id,
                                                                                        clusters.average_ratings_for_age_by_items,
@@ -149,7 +153,7 @@ def predict_by_pearson(user_id, pearson_matrix, user):
     return user
 
 
-def predict_for_kmeans(user_id, item_id, average_ratings_for_item_kmeans, clusters_by_kmeans, user):
+def predict_for_aco_kmeans(user_id, item_id, average_ratings_for_item_kmeans, clusters_by_kmeans, user):
     rate = 0
 
     if clusters_by_kmeans[user_id] == 0:
@@ -177,6 +181,28 @@ def predict_for_kmeans(user_id, item_id, average_ratings_for_item_kmeans, cluste
             rate = average_ratings_for_item_kmeans[item_id][4]
         else:
             rate = user[user_id].avg_r
+
+    return rate
+
+
+def predict_for_kmeans(user_id, item_id, average_ratings_for_item_kmeans, clusters_by_kmeans, user):
+    rate = 0
+
+    if clusters_by_kmeans[user_id] == 0:
+        if average_ratings_for_item_kmeans[item_id][0] != 0:
+            rate = (average_ratings_for_item_kmeans[item_id][0] + user[user_id].avg_r) / 2
+    elif clusters_by_kmeans[user_id] == 1:
+        if average_ratings_for_item_kmeans[item_id][1] != 0:
+            rate = (average_ratings_for_item_kmeans[item_id][1] + user[user_id].avg_r) / 2
+    elif clusters_by_kmeans[user_id] == 2:
+        if average_ratings_for_item_kmeans[item_id][2] != 0:
+            rate = (average_ratings_for_item_kmeans[item_id][2] + user[user_id].avg_r) / 2
+    elif clusters_by_kmeans[user_id] == 3:
+        if average_ratings_for_item_kmeans[item_id][3] != 0:
+            rate = (average_ratings_for_item_kmeans[item_id][3] + user[user_id].avg_r) / 2
+    elif clusters_by_kmeans[user_id] == 4:
+        if average_ratings_for_item_kmeans[item_id][4] != 0:
+            rate = (average_ratings_for_item_kmeans[item_id][4] + user[user_id].avg_r) / 2
 
     return rate
 

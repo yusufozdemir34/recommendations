@@ -6,6 +6,7 @@ from domain.User import User
 from dto.DataDTO import DataDTO
 
 
+
 def prepare_data():
     # find user_user_pearson relative to pearson algorithm
     user_item_ratings_for_predict, user_item_ratings, user, item, user_user_pearson = load_model_as_np()
@@ -34,8 +35,8 @@ def create_model():
     d = Dataset()
     d.load_users("../data/u.user", user)
     d.load_items("../data/u.item", item)
-    d.load_ratings("../data/uayusuf.base", rating)
-    d.load_ratings("../data/ua.base", rating_test)
+    d.load_ratings("../data/u3.base", rating)
+    d.load_ratings("../data/u3.test", rating_test)
 
     n_users = len(user)
     n_items = len(item)
@@ -45,35 +46,34 @@ def create_model():
     # NumPy sıfırlar işlevi, yalnızca sıfır içeren NumPy dizileri oluşturmanıza olanak sağlar.
     # Daha da önemlisi, bu işlev dizinin tam boyutlarını belirlemenizi sağlar.
     # Ayrıca tam veri türünü belirlemenize de olanak tanır.
-    user_item_ratings = np.zeros((n_users, n_items))
+    training_user_item_ratings = np.zeros((n_users, n_items))
     for r in rating:
-        user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
+        training_user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
 
     # print(utility)
 
-    base_user_item_ratings = np.zeros((n_users, n_items))
+    test_user_item_ratings = np.zeros((n_users, n_items))
     for r in rating_test:
-        base_user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
+        test_user_item_ratings[r.user_id - 1][r.item_id - 1] = r.rating
 
     # clusteri kaldirdiğimizda ortalamayı nasıl bulup ekleyeceğiz.
     # prediction daki [cluster.labels_[j] yerine ne ekleycegiz
-    pcs_matrix = np.zeros((n_users, n_users))
+    pcs_matrix = np.zeros((np.size(training_user_item_ratings, 0), np.size(training_user_item_ratings, 0)))
 
-    for i in range(0, n_users):
+    for i in range(0, np.size(training_user_item_ratings, 0)):
         for j in range(0, i):
             if i != j:
-                A = user_item_ratings[i]
-                B = user_item_ratings[j]
+                A = training_user_item_ratings[i]
+                B = training_user_item_ratings[j]
                 pcs_matrix[i][j], _ = pearsonr(A, B)
-    # verinin bir kismini sildim. sildigim datalari -1 olarak isaretliyoruz.
-    # daha sonra bunlari tahmin edeceğimizde hangilerini tahmin ettiğimizi bilmek icin -1 yapiyoruz.
-    for i in range(0, n_users):
-        for j in range(0, n_items):
-            if user_item_ratings[i][j] != base_user_item_ratings[i][j]:
-                user_item_ratings[i][j] == -1
-    # store all records to nm array by being binary
-    save_model_as_np(user_item_ratings, base_user_item_ratings, user, item, pcs_matrix)
-    return user_item_ratings, base_user_item_ratings, user, item, pcs_matrix
+
+    n_users = np.size(test_user_item_ratings, 0)
+    n_items = np.size(test_user_item_ratings, 1)
+
+    dataDTO = DataDTO(test_user_item_ratings, training_user_item_ratings, user, item, pcs_matrix, n_users,
+                      n_items)
+
+    return dataDTO
 
 
 def save_model_as_np(utility, test, user, item, pcs_matrix):

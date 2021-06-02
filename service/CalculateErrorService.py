@@ -1,53 +1,72 @@
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import math
 
-
-def run_mean_absolute_error(predictions, user_item_ratings, n_users, n_items):
-    print(" ")
-    print("                    Mean Absolute Error Results: ")
-    pearson_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_ratings_by_pearson, n_users, n_items,
-                                    "Predicted Ratings by Pearson")
-    kmeans_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_ratings_by_kmeans, n_users, n_items,
-                                   "Predicted Ratings by Kmeans ")
-    ACO_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_ratings_by_aco, n_users, n_items,
-                                "Predicted Ratings by ACO    ")
-    age_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_rating_by_age, n_users, n_items,
-                                "Predicted Ratings by Age    ")
-    sex_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_rating_by_sex, n_users, n_items,
-                                "Predicted Ratings by Sex    ")
+from dto.ErrorDTO import ErrorPercentage
 
 
 def run_error_metrics(predictions, data):
-    run_mean_square_error(predictions, data.user_item_ratings,data.n_users, data.n_items)
-    run_mean_absolute_error(predictions, data.user_item_ratings, data.n_users, data.n_items)
+    error = ErrorPercentage(data)
+    error = run_mean_square_error(predictions, data.user_item_ratings_for_predict, data.n_users, data.n_items, error)
+    error = run_mean_absolute_error(predictions, data.user_item_ratings_for_predict, data.n_users, data.n_items, error)
+
+    return error
 
 
-def run_mean_square_error(predictions, user_item_ratings, n_users, n_items):
+def run_mean_absolute_error(predictions, user_item_ratings, n_users, n_items, error):
+    print(" ")
+    print("                    Mean Absolute Error Results: ")
+    error.pearson_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_ratings_by_pearson, n_users,
+                                             n_items,
+                                             "Predicted Ratings by Pearson   ")
+    error.kmeans_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_ratings_by_kmeans, n_users,
+                                            n_items,
+                                            "Predicted Ratings by Kmeans    ")
+    error.ACO_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_ratings_by_aco, n_users, n_items,
+                                         "Predicted Ratings by ACO       ")
+    error.ACO_Kmeans_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_ratings_by_aco_kmeans, n_users,
+                                                n_items,
+                                                "Predicted Ratings by ACO-Kmeans")
+    error.age_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_rating_by_age, n_users, n_items,
+                                         "Predicted Ratings by Age       ")
+    error.sex_MAE = mean_absoluted_error(user_item_ratings, predictions.predicted_rating_by_sex, n_users, n_items,
+                                         "Predicted Ratings by Sex       ")
+
+    return error
+
+
+def run_mean_square_error(predictions, user_item_ratings, n_users, n_items, error):
     print("                    Mean Square Error Results: ")
-    pearson_MSE = mean_square_error(user_item_ratings, predictions.predicted_ratings_by_pearson, n_users, n_items,
-                                    "Predicted Ratings by Pearson")
-    kmeans_MSE = mean_square_error(user_item_ratings, predictions.predicted_ratings_by_kmeans, n_users, n_items,
-                                   "Predicted Ratings by Kmeans ")
-    ACO_MSE = mean_square_error(user_item_ratings, predictions.predicted_ratings_by_aco, n_users, n_items,
-                                "Predicted Ratings by ACO    ")
-    age_MSE = mean_square_error(user_item_ratings, predictions.predicted_rating_by_age, n_users, n_items,
-                                "Predicted Ratings by Age    ")
-    sex_MSE = mean_square_error(user_item_ratings, predictions.predicted_rating_by_sex, n_users, n_items,
-                                "Predicted Ratings by Sex    ")
+    error.pearson_MSE = mean_square_error(user_item_ratings, predictions.predicted_ratings_by_pearson, n_users, n_items,
+                                          "Predicted Ratings by Pearson    ")
+    error.kmeans_MSE = mean_square_error(user_item_ratings, predictions.predicted_ratings_by_kmeans, n_users, n_items,
+                                         "Predicted Ratings by Kmeans     ")
+    error.ACO_MSE = mean_square_error(user_item_ratings, predictions.predicted_ratings_by_aco, n_users, n_items,
+                                      "Predicted Ratings by ACO Cluster")
+    error.ACO_Kmeans_MSE = mean_square_error(user_item_ratings, predictions.predicted_ratings_by_aco_kmeans, n_users,
+                                             n_items,
+                                             "Predicted Ratings by ACO-Kmeans ")
+    error.age_MSE = mean_square_error(user_item_ratings, predictions.predicted_rating_by_age, n_users, n_items,
+                                      "Predicted Ratings by Age        ")
+    error.sex_MSE = mean_square_error(user_item_ratings, predictions.predicted_rating_by_sex, n_users, n_items,
+                                      "Predicted Ratings by Sex        ")
 
-    pearson_RMSE = math.sqrt(pearson_MSE)
-    kmeans_RMSE = math.sqrt(kmeans_MSE)
-    ACO_RMSE = math.sqrt(ACO_MSE)
-    age_RMSE = math.sqrt(age_MSE)
-    sex_RMSE = math.sqrt(sex_MSE)
+    error.pearson_RMSE = math.sqrt(error.pearson_MSE)
+    error.kmeans_RMSE = math.sqrt(error.kmeans_MSE)
+    error.ACO_RMSE = math.sqrt(error.ACO_MSE)
+    error.ACO_Kmeans_RMSE = math.sqrt(error.ACO_Kmeans_MSE)
+    error.age_RMSE = math.sqrt(error.age_MSE)
+    error.sex_RMSE = math.sqrt(error.sex_MSE)
 
     print("\n")
     print("                    Root Mean Square Error Results: ")
-    print("Predicted Ratings by Pearson RMSE: ", pearson_RMSE)
-    print("Predicted Ratings by Kmeans  RMSE: ", kmeans_RMSE)
-    print("Predicted Ratings by ACO     RMSE: ", ACO_RMSE)
-    print("Predicted Ratings by Age     RMSE: ", age_RMSE)
-    print("Predicted Ratings by Sex     RMSE: ", sex_RMSE)
+    print("Predicted Ratings by Pearson     RMSE: ", error.pearson_RMSE)
+    print("Predicted Ratings by Kmeans      RMSE: ", error.kmeans_RMSE)
+    print("Predicted Ratings by ACO-Cluster RMSE: ", error.ACO_RMSE)
+    print("Predicted Ratings by ACO-Kmeans  RMSE: ", error.ACO_Kmeans_RMSE)
+    print("Predicted Ratings by Age         RMSE: ", error.age_RMSE)
+    print("Predicted Ratings by Sex         RMSE: ", error.sex_RMSE)
+
+    return error
 
 
 def mean_square_error(test, utility, n_users, n_items, calculation_type):
@@ -60,10 +79,11 @@ def mean_square_error(test, utility, n_users, n_items, calculation_type):
                 y_true.append(test[i][j])
                 y_pred.append(utility[i][j])
 
-    MSE = mean_squared_error(y_true, y_pred) * 30
+    MSE = mean_squared_error(y_true, y_pred)
     print(calculation_type, " MSE: %f" % MSE)
 
     return MSE
+
 
 def mean_absoluted_error(test, utility, n_users, n_items, calculation_type):
     # test datası ile tehmin arasında MAE
@@ -75,7 +95,7 @@ def mean_absoluted_error(test, utility, n_users, n_items, calculation_type):
                 y_true.append(test[i][j])
                 y_pred.append(utility[i][j])
 
-    MAE = mean_absolute_error(y_true, y_pred) * 30
+    MAE = mean_absolute_error(y_true, y_pred)
     print(calculation_type, " MAE: %f" % MAE)
 
     return MAE

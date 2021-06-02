@@ -1,0 +1,17 @@
+import numpy as np
+
+from service.ClusterService import create_tau_by_aco
+from service.ModelService import load_model_as_np
+
+np.random.seed(0)
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+utility, test, user, item, user_user_pearson = load_model_as_np()
+feromon = create_tau_by_aco(943, user_user_pearson)
+sns.set_theme()
+# uniform_data = np.random.rand(943, 943)
+ax = sns.heatmap(feromon)
+ax = sns.heatmap(feromon, vmin=0, vmax=1)
+plt.show()
